@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -38,6 +39,8 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 
 import java.io.File;
@@ -108,6 +111,7 @@ public class BingFragment extends Fragment {
     private String mDate;
     private PhotoView viewPhotoView;
     private ProgressBar pb;
+    private Button btnRefresh;
     private TextView tvProgress;
     private BingHpBottomCellView viewBingHpBottomCellView;
     private OnBingFragmentInteractionListener mListener;
@@ -174,6 +178,7 @@ public class BingFragment extends Fragment {
 
         viewPhotoView = (PhotoView) view.findViewById(R.id.viewPhotoView);
         pb = (ProgressBar) view.findViewById(R.id.pb);
+        btnRefresh = (Button) view.findViewById(R.id.btnRefresh);
         tvProgress = (TextView) view.findViewById(R.id.tvProgress);
         viewBingHpBottomCellView = (BingHpBottomCellView) view.findViewById(R.id.viewBingHpBottomCellView);
 
@@ -230,17 +235,11 @@ public class BingFragment extends Fragment {
 
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Utility.cancelTaskInterrupt(mGetBingTask);
-                mGetBingTask = new GetBingTask(mDate, mCountry);
-                mGetBingTask.execute();
-
-//                loadBingPicture(mBing);
+                getBing();
             }
         });
 
-        Utility.cancelTaskInterrupt(mGetBingTask);
-        mGetBingTask = new GetBingTask(mDate, mCountry);
-        mGetBingTask.execute();
+        getBing();
 
         viewBingHpBottomCellView.viewBingHpCtrlsView.cbHpcFullSmall.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -281,7 +280,18 @@ public class BingFragment extends Fragment {
             }
         });
 
+        btnRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getBing();
+            }
+        });
+    }
 
+    private void getBing() {
+        Utility.cancelTaskInterrupt(mGetBingTask);
+        mGetBingTask = new GetBingTask(mDate, mCountry);
+        mGetBingTask.execute();
     }
 
     @Override
@@ -449,20 +459,35 @@ public class BingFragment extends Fragment {
         protected void onPreExecute() {
             super.onPreExecute();
             pb.setVisibility(View.VISIBLE);
+            btnRefresh.setVisibility(View.GONE);
             tvProgress.setVisibility(View.VISIBLE);
             tvProgress.setText(getString(R.string.bing_loading));
         }
 
         @Override
         protected Bing doInBackground(Void... params) {
+
+            DateTime dateLocal = DateTimeFormat.forPattern(getString(R.string.bing_date_formate)).parseDateTime(mDate);
+            DateTime dateTimeLocal = DateTime.now().year().setCopy(dateLocal.getYear()).monthOfYear().setCopy(dateLocal.getMonthOfYear()).dayOfMonth().setCopy(dateLocal.getDayOfMonth());
+            DateTime dateTimeZHCN = dateTimeLocal.toDateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone("GMT+08:00")));
+            String dateZHCN = dateTimeZHCN.toString(getString(R.string.bing_date_formate));
+
+            Log.d(TAG, "dateLocal:" + dateLocal);
+            Log.d(TAG, "dateTimeLocal:" + dateTimeLocal);
+            Log.d(TAG, "dateTimeZHCN:" + dateTimeZHCN);
+            Log.d(TAG, "dateZHCN:" + dateZHCN);
+
+//            Utility.isBingROWUpdated(getActivity(), bing.bing_date);
+
             try {
-                Bing bing = DBUtil.getBing(date, country);
+                Bing bing = DBUtil.getBing(dateZHCN, country);
                 Log.d(TAG, "bing:" + bing);
+
                 if (bing == null) {
-                    DateTime dateTime = DateTimeFormat.forPattern(getString(R.string.bing_date_formate)).withZone(DateTimeZone.forTimeZone(TimeZone.getTimeZone("GMT+08:00"))).parseDateTime(mDate);
-                    String y = String.valueOf(dateTime.getYear());
-                    String m = String.valueOf(dateTime.getMonthOfYear());
-                    String d = String.valueOf(dateTime.getDayOfMonth());
+                    String y = String.valueOf(dateTimeZHCN.getYear());
+                    String m = String.valueOf(dateTimeZHCN.getMonthOfYear());
+                    String d = String.valueOf(dateTimeZHCN.getDayOfMonth());
+
                     INetwork network = new INetworkImpl();
                     bing = network.adminAjax("get_bing", y, m, d, country);
                     DBUtil.insertOrReplace(bing);
@@ -486,7 +511,7 @@ public class BingFragment extends Fragment {
             super.onPostExecute(bing);
 
             if (isCancelled()) {
-                pb.setVisibility(View.GONE);
+                pb.setVisibility(View.INVISIBLE);
                 tvProgress.setVisibility(View.GONE);
                 return;
             }
@@ -499,6 +524,8 @@ public class BingFragment extends Fragment {
                 return;
             }
 
+
+
             loadBingPicture(bing);
         }
 
@@ -510,7 +537,8 @@ public class BingFragment extends Fragment {
 //        }
 
         void onPostExecute(Exception e) {
-            pb.setVisibility(View.GONE);
+            pb.setVisibility(View.INVISIBLE);
+            btnRefresh.setVisibility(View.VISIBLE);
             tvProgress.setVisibility(View.VISIBLE);
             tvProgress.setText(tvProgress.getContext().getString(R.string.bing_loaded_failed));
         }

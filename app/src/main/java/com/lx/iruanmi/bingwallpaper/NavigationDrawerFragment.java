@@ -366,7 +366,8 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     private long getMaxDate() {
-        return Utility.getMaxDate();
+//        return Utility.getMaxDate();
+        return DateTime.now().getMillis();
     }
 
     public void setBingFragmentParams(String date, String country) {

@@ -8,12 +8,17 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 
+import com.lx.iruanmi.bingwallpaper.R;
+
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.MutableDateTime;
+import org.joda.time.format.DateTimeFormat;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.TimeZone;
 
 /**
  * Created by liuxue on 2015/3/15.
@@ -53,17 +58,14 @@ public class Utility {
     }
 
     public static long getMinDate() {
-        MutableDateTime minDate = DateTime.now().minusDays(64).toMutableDateTime();
-        minDate.setMillisOfDay(0);
-        Log.d(TAG, "getMinDate() minDate:" + minDate);
-        return minDate.getMillis();
+        return DateTime.now().minusDays(64).millisOfDay().setCopy(0).getMillis();
     }
 
-    public static long getMaxDate() {
-        DateTime maxDate = DateTime.now();
-        Log.d(TAG, "getMinDate() maxDate:" + maxDate);
-        return maxDate.getMillis();
-    }
+//    public static long getMaxDate() {
+//        DateTime maxDate = DateTime.now();
+//        Log.d(TAG, "getMinDate() maxDate:" + maxDate);
+//        return maxDate.getMillis();
+//    }
 
     public static void deleteExternalStoragePublicPicture(String name) {
         // Create a path where we will place our picture in the user's
@@ -152,5 +154,22 @@ public class Utility {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setDataAndType(Uri.fromFile(file), "image/*");
         context.startActivity(intent);
+    }
+
+    public static boolean isBingUpdated(Context context, String date) {
+//        DateTime dateDateTime = DateTimeFormat.forPattern(context.getResources().getString(R.string.bing_date_formate)).parseDateTime(date);
+//
+//        DateTime nowDateTime = DateTime.now();
+//        DateTime beijingNowDateTime = nowDateTime.toDateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone("GMT+08:00")));
+//
+//        DateTime beijingUpdateDateTime = new DateTime(beijingNowDateTime.getYear(), beijingNowDateTime.getMonthOfYear(), beijingNowDateTime.getDayOfMonth(), 16, 0, DateTimeZone.forTimeZone(TimeZone.getTimeZone("GMT+08:00")));
+//
+//        Log.d(TAG, "bind() dateDateTime:" + dateDateTime);
+//        Log.d(TAG, "bind() nowDateTime:" + nowDateTime);
+//        Log.d(TAG, "bind() beijingNowDateTime:" + beijingNowDateTime);
+//        Log.d(TAG, "bind() beijingUpdateDateTime:" + beijingUpdateDateTime);
+//
+//        return beijingNowDateTime.getHourOfDay() >= 16;
+        return false;
     }
 }
