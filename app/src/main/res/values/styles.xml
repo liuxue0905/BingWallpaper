@@ -1,0 +1,99 @@
+<resources>
+
+    <style name="Widget"></style>
+
+    <style name="Widget.Style1"></style>
+
+    <style name="Widget.Style1.ActionBar" parent="Widget.AppCompat.ActionBar">
+        <item name="android:background">@color/musCard_background</item>
+        <item name="background">@color/musCard_background</item>
+    </style>
+
+    <!--<style name="Widget.Style1.Button" >-->
+    <!--<item name="android:minWidth">0dp</item>-->
+    <!--<item name="android:minHeight">0dp</item>-->
+    <!--</style>-->
+
+    <style name="Widget.Style1.NavigationDrawer"></style>
+
+    <style name="Widget.Style1.NavigationDrawer.Section">
+        <item name="android:background">?attr/colorPrimaryDark</item>
+        <item name="android:paddingTop">6dp</item>
+        <item name="android:paddingBottom">6dp</item>
+        <item name="android:paddingLeft">6dp</item>
+        <item name="android:paddingRight">6dp</item>
+    </style>
+
+    <!--parent="Widget.AppCompat.DropDownItem.Spinner"-->
+    <!--<style name="Widget.Style1.NavigationDrawer.SpinnerDropdownItem" >-->
+    <!--<item name="android:textStyle">bold</item>-->
+    <!--<item name="android:background">@drawable/navt_background</item>-->
+    <!--<item name="android:paddingTop">9dp</item>-->
+    <!--<item name="android:paddingBottom">9dp</item>-->
+    <!--<item name="android:paddingLeft">9dp</item>-->
+    <!--<item name="android:paddingRight">9dp</item>-->
+    <!--<item name="android:textColor">@color/navt_text</item>-->
+    <!--</style>-->
+
+    <style name="Widget.Style1.NavigationDrawer.SpinnerTextView" parent="Widget.AppCompat.DropDownItem.Spinner">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/navt_text_checked</item>
+        <item name="android:layout_marginTop">9dp</item>
+        <item name="android:layout_marginBottom">9dp</item>
+        <item name="android:layout_marginLeft">9dp</item>
+        <item name="android:layout_marginRight">9dp</item>
+    </style>
+
+    <style name="Widget.Style1.NavigationDrawer.RadioGroupTitle">
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">9dp</item>
+        <item name="android:paddingBottom">9dp</item>
+        <item name="android:paddingLeft">9dp</item>
+        <item name="android:paddingRight">9dp</item>
+        <item name="android:layout_marginRight">6dp</item>
+        <item name="android:layout_marginBottom">6dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:background">@color/navt_background_pressed</item>
+        <item name="android:textColor">@color/navt_text_checked</item>
+        <item name="android:gravity">left</item>
+    </style>
+
+    <style name="Widget.Style1.NavigationDrawer.RadioButton">
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">9dp</item>
+        <item name="android:paddingBottom">9dp</item>
+        <item name="android:paddingLeft">9dp</item>
+        <item name="android:paddingRight">9dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/navt_text</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/navt_background</item>
+        <item name="android:button">@null</item>
+        <item name="android:layout_marginRight">6dp</item>
+    </style>
+
+    <style name="Widget.Style1.NavigationDrawer.DateButton">
+        <!--<item name="android:textStyle">bold</item>-->
+        <item name="android:paddingTop">9dp</item>
+        <item name="android:paddingBottom">9dp</item>
+        <item name="android:paddingLeft">9dp</item>
+        <item name="android:paddingRight">9dp</item>
+        <item name="android:gravity">left|center</item>
+        <item name="android:background">@drawable/btn_bg</item>
+    </style>
+
+    <style name="Widget.Style1.BingHpBottomCell"></style>
+
+    <style name="Widget.Style1.BingHpBottomCell.HpCtrls"></style>
+
+    <style name="Widget.Style1.BingHpBottomCell.MusCard">
+        <item name="android:layout_width">260dp</item>
+        <item name="android:background">@color/musCard_background</item>
+    </style>
+
+
+</resources>

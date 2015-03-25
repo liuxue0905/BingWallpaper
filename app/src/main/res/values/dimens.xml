@@ -1,0 +1,29 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <!-- Per the design guidelines, navigation drawers should be between 240dp and 320dp:
+         https://developer.android.com/design/patterns/navigation-drawer.html -->
+    <dimen name="navigation_drawer_width">240dp</dimen>
+
+    <dimen name="musCard_paddingTop">6dp</dimen>
+    <dimen name="musCard_paddingBottom">60dp</dimen>
+    <dimen name="musCard_ImageTitle_marginLR">6dp</dimen>
+    <dimen name="musCard_ImageTitle_paddingTB">3dp</dimen>
+    <dimen name="musCard_ImageTitle_textSize">16sp</dimen>
+    <dimen name="musCard_Copyright_textSize">12sp</dimen>
+    <dimen name="musCard_Copyright_paddingT">3dp</dimen>
+    <dimen name="musCard_Copyright_paddingR">6dp</dimen>
+
+    <dimen name="viewBingMusCardContentView_width">260dp</dimen>
+    <dimen name="viewBingMusCardContentView_marginR">10dp</dimen>
+    <dimen name="sh_rdiv_marginR">20dp</dimen>
+
+    <dimen name="hp_ctrls_height">60dp</dimen>
+    <dimen name="hp_ctrls_paddingT">19dp</dimen>
+    <dimen name="carouselControls_marginT">4dp</dimen>
+    <dimen name="carouselControls_marginL">16dp</dimen>
+
+    <dimen name="dropdownListPreferredItemHeight">48dp</dimen>
+</resources>

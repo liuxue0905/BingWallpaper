@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/musCard_background"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/musCard_paddingBottom"
+    android:paddingTop="@dimen/musCard_paddingTop">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/musCard_ImageTitle_marginLR"
+        android:layout_marginRight="@dimen/musCard_ImageTitle_marginLR"
+        android:paddingBottom="@dimen/musCard_ImageTitle_paddingTB"
+        android:paddingTop="@dimen/musCard_ImageTitle_paddingTB"
+        android:text="夏威夷茂宜岛，哈雷阿卡拉火山口的渣锥"
+        android:textColor="@color/musCardImageTitle"
+        android:textSize="@dimen/musCard_ImageTitle_textSize"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tvCopyright"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/musCard_ImageTitle_marginLR"
+        android:layout_marginRight="@dimen/musCard_ImageTitle_marginLR"
+        android:paddingRight="@dimen/musCard_Copyright_paddingR"
+        android:paddingTop="@dimen/musCard_Copyright_paddingT"
+        android:text="(© Dennis Maisel/Tandem Stills + Motion)"
+        android:textColor="@color/musCardCopyright"
+        android:textSize="@dimen/musCard_Copyright_textSize"
+        android:visibility="gone" />
+
+
+</LinearLayout>

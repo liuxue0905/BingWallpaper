@@ -1,0 +1,65 @@
+<!--<ListView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:choiceMode="singleChoice"
+    android:divider="@android:color/transparent" android:dividerHeight="0dp"
+    android:background="#cccc"
+    tools:context="com.lx.iruanmi.bingwallpaper.NavigationDrawerFragment" />-->
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="@dimen/navigation_drawer_width"
+    android:layout_height="match_parent"
+    android:background="#cccc"
+    android:divider="@drawable/divider"
+    android:orientation="vertical"
+    android:showDividers="none"
+    tools:context="com.lx.iruanmi.bingwallpaper.NavigationDrawerFragment">
+
+    <LinearLayout
+        style="@style/Widget.Style1.NavigationDrawer.Section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="0dp">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:addStatesFromChildren="true"
+            android:background="@drawable/btn_bg">
+
+            <Spinner
+                android:id="@+id/spinnerC"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </FrameLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/Widget.Style1.NavigationDrawer.Section"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btnDate"
+            style="@style/Widget.Style1.NavigationDrawer.DateButton"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/dropdownListPreferredItemHeight"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:text="2015年03月12日"
+            android:textSize="14sp" />
+
+        <CalendarView
+            android:id="@+id/viewCanlendarView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:selectedDateVerticalBar="?attr/colorPrimary"
+            android:selectedWeekBackgroundColor="?attr/colorPrimaryDark" />
+    </LinearLayout>
+
+
+</LinearLayout>

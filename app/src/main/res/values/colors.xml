@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <eat-comment />
+    <color name="windowBackground">#666</color>
+    <color name="colorPrimary">#FF8C00</color>
+    <color name="colorPrimaryDark">#99000000</color>
+
+    <eat-comment />
+    <color name="navt_background_normal">#2B2B2B</color>
+    <color name="navt_background_pressed">#A0A0A0</color>
+    <color name="navt_background_checked">#FF8C00</color>
+    <color name="navt_background_disable">#848484</color>
+
+    <color name="navt_text_normal">#FFF</color>
+    <color name="navt_text_checked">#000</color>
+
+    <color name="musCard_background">#99000000</color>
+    <color name="musCardImageTitle">#ddd</color>
+    <color name="musCardCopyright">#aaa</color>
+
+    <color name="navigation_drawer_section_background">#ccA2A2A2</color>
+
+
+    <eat-comment />
+
+
+    <!--<color name="bing_dl_menu_background_normal">#FF1E00</color>-->
+    <!--<color name="bing_dl_menu_background_disable">#CACACA</color>-->
+
+    <!--<color name="hdr_background">#333</color>-->
+    <!--<color name="hdr_spl">#ACACAC</color>-->
+</resources>

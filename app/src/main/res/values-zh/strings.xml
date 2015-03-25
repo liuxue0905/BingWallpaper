@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">每日必应壁纸</string>
+    <string name="title_activity_bing">每日必应壁纸</string>
+
+    <string name="c_display_zh_cn">必应中国</string>
+    <string name="c_display_row">必应国际</string>
+
+    <string name="download_size">下载尺寸</string>
+
+    <string name="aa">爱软迷温馨提示：必应国际版北京时间每日下午四时更新下一日图片~</string>
+    <string name="pic_loading">正在加载图片...</string>
+    <string name="bing_loading">正在加载必应信息...</string>
+    <string name="pic_loaded_failed">加载图片失败！</string>
+    <string name="bing_loaded_failed">加载必应信息失败！</string>
+    <string name="download_successful">下载成功！</string>
+</resources>

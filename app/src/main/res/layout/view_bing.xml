@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.lx.iruanmi.bingwallpaper.widget.LXRadioGroup
+        android:id="@+id/rg_bing"
+        style="@style/Widget.Style1.NavigationDrawer.Section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            style="@style/Widget.Style1.NavigationDrawer.RadioGroupTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="0dp"
+            android:text="@string/download_size"
+            android:visibility="gone" />
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="1,2">
+
+            <TableRow>
+
+                <TextView
+                    style="@style/Widget.Style1.NavigationDrawer.RadioGroupTitle"
+                    android:layout_marginBottom="0dp"
+                    android:text="@string/landscape" />
+
+                <com.lx.iruanmi.bingwallpaper.widget.LXRadioButton
+                    android:id="@+id/rb_bing_maxpix"
+                    style="@style/Widget.Style1.NavigationDrawer.RadioButton"
+                    android:text="1920x1200" />
+
+                <com.lx.iruanmi.bingwallpaper.widget.LXRadioButton
+                    android:id="@+id/rb_bing_16x9"
+                    style="@style/Widget.Style1.NavigationDrawer.RadioButton"
+                    android:layout_marginRight="0dp"
+                    android:text="1920x1080" />
+            </TableRow>
+
+            <TableRow android:layout_marginTop="4dp">
+
+                <TextView
+                    style="@style/Widget.Style1.NavigationDrawer.RadioGroupTitle"
+                    android:layout_marginBottom="0dp"
+                    android:text="@string/portrait" />
+
+                <com.lx.iruanmi.bingwallpaper.widget.LXRadioButton
+                    android:id="@+id/rb_bing_9x16"
+                    style="@style/Widget.Style1.NavigationDrawer.RadioButton"
+                    android:text="1080x1920" />
+
+                <com.lx.iruanmi.bingwallpaper.widget.LXRadioButton
+                    android:id="@+id/rb_bing_9x15"
+                    style="@style/Widget.Style1.NavigationDrawer.RadioButton"
+                    android:layout_marginRight="0dp"
+                    android:text="0768x1280" />
+            </TableRow>
+        </TableLayout>
+
+    </com.lx.iruanmi.bingwallpaper.widget.LXRadioGroup>
+</LinearLayout>

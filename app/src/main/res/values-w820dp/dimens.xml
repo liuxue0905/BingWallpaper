@@ -1,0 +1,26 @@
+<resources>
+    <!-- Example customization of dimensions originally defined in res/values/dimens.xml
+         (such as screen margins) for screens with more than 820dp of available width. This
+         would include 7" and 10" devices in landscape (~960dp and ~1280dp respectively). -->
+    <dimen name="activity_horizontal_margin">64dp</dimen>
+
+    <dimen name="musCard_paddingTop">10dp</dimen>
+    <dimen name="musCard_paddingBottom">60dp</dimen>
+    <dimen name="musCard_ImageTitle_marginLR">10dp</dimen>
+    <dimen name="musCard_ImageTitle_paddingTB">5dp</dimen>
+    <dimen name="musCard_ImageTitle_textSize">22sp</dimen>
+    <dimen name="musCard_Copyright_textSize">13sp</dimen>
+    <dimen name="musCard_Copyright_paddingT">5dp</dimen>
+    <dimen name="musCard_Copyright_paddingR">10dp</dimen>
+
+    <dimen name="viewBingMusCardContentView_width">260dp</dimen>
+    <dimen name="viewBingMusCardContentView_marginR">20dp</dimen>
+    <dimen name="sh_rdiv_marginR">40dp</dimen>
+
+    <dimen name="hp_ctrls_height">60dp</dimen>
+    <dimen name="hp_ctrls_paddingT">19dp</dimen>
+    <dimen name="carouselControls_marginT">4dp</dimen>
+    <dimen name="carouselControls_marginL">33dp</dimen>
+
+    <dimen name="dropdownListPreferredItemHeight">48dp</dimen>
+</resources>

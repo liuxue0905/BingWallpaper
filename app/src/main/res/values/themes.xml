@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Base application theme. -->
+    <!--<style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">-->
+    <!--<style name="AppTheme" parent="Theme.AppCompat">-->
+    <!-- Customize your theme here. -->
+    <!--</style>-->
+
+    <style name="AppTheme.Base" parent="Theme.AppCompat">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+
+        <!--<item name="android:colorAccent">?attr/colorAccent</item>-->
+        <!--<item name="android:colorControlNormal">?attr/colorControlNormal</item>-->
+        <!--<item name="android:colorControlActivated">?attr/colorControlActivated</item>-->
+        <!--<item name="android:colorControlHighlight">?attr/colorControlHighlight</item>-->
+
+        <item name="android:windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+
+
+    </style>
+
+    <style name="AppTheme" parent="AppTheme.Base" />
+
+    <style name="AppTheme.Style1" parent="AppTheme">
+        <item name="android:windowActionBarOverlay">true</item>
+        <!-- 兼容支持库 -->
+        <item name="windowActionBarOverlay">true</item>
+
+        <item name="android:actionBarStyle">@style/Widget.Style1.ActionBar</item>
+        <item name="actionBarStyle">@style/Widget.Style1.ActionBar</item>
+
+        <item name="android:windowBackground">@color/windowBackground</item>
+
+
+        <!--<item name="android:buttonStyle">@style/Widget.Style1.Button</item>-->
+
+        <!--<item name="android:spinnerDropDownItemStyle">@style/Widget.Style1.NavigationDrawer.SpinnerDropdownItem</item>-->
+
+        <!--<item name="dropdownListPreferredItemHeight">?android:attr/listPreferredItemHeightSmall</item>-->
+        <item name="dropdownListPreferredItemHeight">@dimen/dropdownListPreferredItemHeight</item>
+
+        <!-- For PopupMenu -->
+        <item name="listPreferredItemHeightSmall">?android:attr/listPreferredItemHeightSmall</item>
+
+
+    </style>
+</resources>

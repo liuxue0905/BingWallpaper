@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <string name="app_name">Daily Bing Wallpaper</string>
+    <string name="title_activity_bing">Daily Bing Wallpaper</string>
+
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_example">Example action</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="c_display_zh_cn">Bing China</string>
+    <string name="c_display_row">Bing Global</string>
+
+    <string name="bing_date_formate" translatable="false">yyyy-MM-dd</string>
+
+    <!--MM/dd/yyyy-->
+    <string name="minDate_date_formate">MM/dd/yyyy</string>
+
+    <string name="download_size">Download Size</string>
+
+    <string name="pic_loading">Loading Picture...</string>
+    <string name="pic_loaded_failed">Picture Loaded Failed!</string>
+    <string name="bing_loading">Loading Picture Info...</string>
+    <string name="bing_loaded_failed">Picture Info Loaded Failed!</string>
+
+    <string name="aa">iRuanmi Kindly Reminder：Bing Global updates daily at 00:00 PST(Pacific Standard Time)~</string>
+
+    <string name="landscape">横屏</string>
+    <string name="portrait">竖屏</string>
+
+    <!--translatable="false"-->
+
+    <string name="title_activity_bing_formate" translatable="false"><xliff:g id="date">%1$s</xliff:g>\u0020\u00b7\u0020<xliff:g id="c">%2$s</xliff:g></string>
+    <string name="bing_15x9_display" translatable="false">1280x0768</string>
+    <string name="bing_9x15_display" translatable="false">0768x1280</string>
+    <string name="bing_16x10" translatable="false">1920x1200</string>
+    <string name="bing_16x9" translatable="false">1920x1080</string>
+    <string name="bing_15x9" translatable="false">1280x768</string>
+    <string name="bing_9x16" translatable="false">1080x1920</string>
+    <string name="bing_9x15" translatable="false">768x1280</string>
+    <string name="bing_host" translatable="false">http://cn.bing.com</string>
+
+    <!--http://cn.bing.com/az/hprichbg/rb/CinderCones_ZH-CN12230475386_1280x768.jpg-->
+    <!--${bing_host}${bing_picname}_${bing_pix}.jpg-->
+    <string name="bing_url_formate" translatable="false"><xliff:g id="bing_host">%1$s</xliff:g><xliff:g id="bing_picname">%2$s</xliff:g>_<xliff:g id="bing_pix">%3$s</xliff:g>.jpg</string>
+    <string name="download_successful">Download Successful!</string>
+</resources>
