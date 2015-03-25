@@ -12,12 +12,14 @@ import com.lx.iruanmi.bingwallpaper.R;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.joda.time.MutableDateTime;
+import org.joda.time.Days;
+import org.joda.time.Hours;
 import org.joda.time.format.DateTimeFormat;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.TimeZone;
 
 /**
@@ -157,20 +159,31 @@ public class Utility {
     }
 
     public static boolean isBingUpdated(Context context, String date) {
-        DateTime dateTimeZHCN = Utility.getDateTimeZHCN(context, date);
-        String dateZHCN = Utility.getDateStringZHCN(context, date);
+        DateTime dateTimeZHCN = Utility.getDateTimeLocalToZHCN(context, date);
+        DateTime nowDateTimeZHCN = DateTime.now().toDateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone("GMT+08:00")));
+        DateTime updateDateTimeZHCN = getUpdateDateTimeZHCN();
 
-        DateTime nowDateTime = DateTime.now();
-        DateTime nowDateTimeZHCN = nowDateTime.toDateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone("GMT+08:00")));
+        Log.d(TAG, "isBingUpdated() dateTimeZHCN:" + dateTimeZHCN);
+        Log.d(TAG, "isBingUpdated() nowDateTimeZHCN:" + nowDateTimeZHCN);
+        Log.d(TAG, "isBingUpdated() updateDateTimeZHCN:" + updateDateTimeZHCN);
 
-        DateTime updateDateTime = DateTime.now(DateTimeZone.forTimeZone(TimeZone.getTimeZone("GMT+08:00")))
-                .millisOfDay().setCopy(0)
-                .hourOfDay().setCopy(16);
+        Log.d(TAG, "isBingUpdated() Days.daysBetween(updateDateTimeZHCN, dateTimeZHCN):" + Days.daysBetween(updateDateTimeZHCN, dateTimeZHCN));
+        Log.d(TAG, "isBingUpdated() Hours.hoursBetween(updateDateTimeZHCN, dateTimeZHCN):" + Hours.hoursBetween(updateDateTimeZHCN, dateTimeZHCN));
 
-        return false;
+        Hours hours = Hours.hoursBetween(updateDateTimeZHCN, dateTimeZHCN);
+
+        boolean isBingUpdated = !(hours.isLessThan(Hours.ZERO) && hours.isGreaterThan(Hours.hours(-16)));
+        Log.d(TAG, "isBingUpdated() isBingUpdated:" + isBingUpdated);
+        return isBingUpdated;
     }
 
-    public static DateTime getDateTimeZHCN(Context context, String date) {
+    public static DateTime getUpdateDateTimeZHCN() {
+        return DateTime.now()
+                .millisOfDay().setCopy(0)
+                .hourOfDay().setCopy(16);
+    }
+
+    public static DateTime getDateTimeLocalToZHCN(Context context, String date) {
         DateTime dateLocal = DateTimeFormat.forPattern(context.getString(R.string.bing_date_formate)).parseDateTime(date);
         DateTime dateTimeLocal = DateTime.now().year().setCopy(dateLocal.getYear()).monthOfYear().setCopy(dateLocal.getMonthOfYear()).dayOfMonth().setCopy(dateLocal.getDayOfMonth());
         DateTime dateTimeZHCN = dateTimeLocal.toDateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone("GMT+08:00")));
@@ -182,13 +195,4 @@ public class Utility {
         return dateTimeZHCN;
     }
 
-    public static String getDateStringZHCN(Context context, String date) {
-        DateTime dateTimeZHCN = getDateTimeZHCN(context, date);
-        String dateZHCN = dateTimeZHCN.toString(context.getString(R.string.bing_date_formate));
-
-        Log.d(TAG, "dateTimeZHCN:" + dateTimeZHCN);
-        Log.d(TAG, "dateZHCN:" + dateZHCN);
-
-        return dateZHCN;
-    }
 }

@@ -4,7 +4,6 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -27,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.google.gson.JsonSyntaxException;
 import com.lx.iruanmi.bingwallpaper.db.Bing;
 import com.lx.iruanmi.bingwallpaper.db.DBUtil;
 import com.lx.iruanmi.bingwallpaper.util.SystemUiHider;
@@ -38,14 +38,9 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 
-import java.io.File;
-import java.util.TimeZone;
-
+import retrofit.RetrofitError;
 import uk.co.senab.photoview.PhotoView;
 
 
@@ -466,15 +461,13 @@ public class BingFragment extends Fragment {
 
         @Override
         protected Bing doInBackground(Void... params) {
+            mDate = "2015-03-28";
             try {
-                DateTime dateTimeZHCN = Utility.getDateTimeZHCN(getActivity(), mDate);
-                String dateZHCN = Utility.getDateStringZHCN(getActivity(), mDate);
+                DateTime dateTimeZHCN = Utility.getDateTimeLocalToZHCN(getActivity(), mDate);
+                String dateZHCN = dateTimeZHCN.toString(getString(R.string.bing_date_formate));
 
                 Bing bing = DBUtil.getBing(dateZHCN, country);
                 Log.d(TAG, "bing:" + bing);
-
-                boolean isBingUpdated = Utility.isBingUpdated(getActivity(), mDate);
-                Log.d(TAG, "isBingUpdated:" + isBingUpdated);
 
                 if (bing == null) {
                     String y = String.valueOf(dateTimeZHCN.getYear());
@@ -517,8 +510,6 @@ public class BingFragment extends Fragment {
                 return;
             }
 
-
-
             loadBingPicture(bing);
         }
 
@@ -534,6 +525,26 @@ public class BingFragment extends Fragment {
             btnRefresh.setVisibility(View.VISIBLE);
             tvProgress.setVisibility(View.VISIBLE);
             tvProgress.setText(tvProgress.getContext().getString(R.string.bing_loaded_failed));
+
+            Log.d(TAG, "e.getClass():" + e.getClass());
+
+            if (e instanceof retrofit.RetrofitError) {
+                retrofit.RetrofitError re = (retrofit.RetrofitError) e;
+
+                switch (re.getKind()) {
+                    case CONVERSION:
+                        boolean isBingUpdated = Utility.isBingUpdated(getActivity(), mDate);
+                        Log.d(TAG, "isBingUpdated:" + isBingUpdated);
+
+                        DateTime updateDateTimeZHCN = Utility.getUpdateDateTimeZHCN();
+
+                        Log.d(TAG, "updateDateTimeZHCN:" + updateDateTimeZHCN);
+                        Log.d(TAG, "updateDateTimeZHCN.toLocalDateTime():" + updateDateTimeZHCN.toLocalDateTime());
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
     }
 
