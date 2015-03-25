@@ -157,19 +157,38 @@ public class Utility {
     }
 
     public static boolean isBingUpdated(Context context, String date) {
-//        DateTime dateDateTime = DateTimeFormat.forPattern(context.getResources().getString(R.string.bing_date_formate)).parseDateTime(date);
-//
-//        DateTime nowDateTime = DateTime.now();
-//        DateTime beijingNowDateTime = nowDateTime.toDateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone("GMT+08:00")));
-//
-//        DateTime beijingUpdateDateTime = new DateTime(beijingNowDateTime.getYear(), beijingNowDateTime.getMonthOfYear(), beijingNowDateTime.getDayOfMonth(), 16, 0, DateTimeZone.forTimeZone(TimeZone.getTimeZone("GMT+08:00")));
-//
-//        Log.d(TAG, "bind() dateDateTime:" + dateDateTime);
-//        Log.d(TAG, "bind() nowDateTime:" + nowDateTime);
-//        Log.d(TAG, "bind() beijingNowDateTime:" + beijingNowDateTime);
-//        Log.d(TAG, "bind() beijingUpdateDateTime:" + beijingUpdateDateTime);
-//
-//        return beijingNowDateTime.getHourOfDay() >= 16;
+        DateTime dateTimeZHCN = Utility.getDateTimeZHCN(context, date);
+        String dateZHCN = Utility.getDateStringZHCN(context, date);
+
+        DateTime nowDateTime = DateTime.now();
+        DateTime nowDateTimeZHCN = nowDateTime.toDateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone("GMT+08:00")));
+
+        DateTime updateDateTime = DateTime.now(DateTimeZone.forTimeZone(TimeZone.getTimeZone("GMT+08:00")))
+                .millisOfDay().setCopy(0)
+                .hourOfDay().setCopy(16);
+
         return false;
+    }
+
+    public static DateTime getDateTimeZHCN(Context context, String date) {
+        DateTime dateLocal = DateTimeFormat.forPattern(context.getString(R.string.bing_date_formate)).parseDateTime(date);
+        DateTime dateTimeLocal = DateTime.now().year().setCopy(dateLocal.getYear()).monthOfYear().setCopy(dateLocal.getMonthOfYear()).dayOfMonth().setCopy(dateLocal.getDayOfMonth());
+        DateTime dateTimeZHCN = dateTimeLocal.toDateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone("GMT+08:00")));
+
+        Log.d(TAG, "dateLocal:" + dateLocal);
+        Log.d(TAG, "dateTimeLocal:" + dateTimeLocal);
+        Log.d(TAG, "dateTimeZHCN:" + dateTimeZHCN);
+
+        return dateTimeZHCN;
+    }
+
+    public static String getDateStringZHCN(Context context, String date) {
+        DateTime dateTimeZHCN = getDateTimeZHCN(context, date);
+        String dateZHCN = dateTimeZHCN.toString(context.getString(R.string.bing_date_formate));
+
+        Log.d(TAG, "dateTimeZHCN:" + dateTimeZHCN);
+        Log.d(TAG, "dateZHCN:" + dateZHCN);
+
+        return dateZHCN;
     }
 }

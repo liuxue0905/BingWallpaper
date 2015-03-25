@@ -466,22 +466,15 @@ public class BingFragment extends Fragment {
 
         @Override
         protected Bing doInBackground(Void... params) {
-
-            DateTime dateLocal = DateTimeFormat.forPattern(getString(R.string.bing_date_formate)).parseDateTime(mDate);
-            DateTime dateTimeLocal = DateTime.now().year().setCopy(dateLocal.getYear()).monthOfYear().setCopy(dateLocal.getMonthOfYear()).dayOfMonth().setCopy(dateLocal.getDayOfMonth());
-            DateTime dateTimeZHCN = dateTimeLocal.toDateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone("GMT+08:00")));
-            String dateZHCN = dateTimeZHCN.toString(getString(R.string.bing_date_formate));
-
-            Log.d(TAG, "dateLocal:" + dateLocal);
-            Log.d(TAG, "dateTimeLocal:" + dateTimeLocal);
-            Log.d(TAG, "dateTimeZHCN:" + dateTimeZHCN);
-            Log.d(TAG, "dateZHCN:" + dateZHCN);
-
-//            Utility.isBingROWUpdated(getActivity(), bing.bing_date);
-
             try {
+                DateTime dateTimeZHCN = Utility.getDateTimeZHCN(getActivity(), mDate);
+                String dateZHCN = Utility.getDateStringZHCN(getActivity(), mDate);
+
                 Bing bing = DBUtil.getBing(dateZHCN, country);
                 Log.d(TAG, "bing:" + bing);
+
+                boolean isBingUpdated = Utility.isBingUpdated(getActivity(), mDate);
+                Log.d(TAG, "isBingUpdated:" + isBingUpdated);
 
                 if (bing == null) {
                     String y = String.valueOf(dateTimeZHCN.getYear());
