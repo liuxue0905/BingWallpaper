@@ -5,7 +5,7 @@
         <item>@string/c_display_row</item>
     </string-array>
 
-    <string-array name="c">
+    <string-array name="c" translatable="false">
         <item>ZH-CN</item>
         <item>ROW</item>
     </string-array>

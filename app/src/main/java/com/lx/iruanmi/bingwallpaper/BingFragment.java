@@ -153,6 +153,11 @@ public class BingFragment extends Fragment {
         mSystemUiHider = SystemUiHider.getInstance(getActivity(), contentView, HIDER_FLAGS);
         mSystemUiHider.setup();
         mSystemUiHider.show();
+
+        HashMap<String,String> map = new HashMap<String,String>();
+        map.put("country", mCountry);
+        map.put("date", mDate);
+        MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_BING_ONCREATE, map);
     }
 
     @Override
