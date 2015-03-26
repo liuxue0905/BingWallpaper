@@ -4,12 +4,13 @@
     <string name="app_name">Daily Bing Wallpaper</string>
     <string name="title_activity_bing">Daily Bing Wallpaper</string>
 
-
+    <eat-comment/>
     <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
     <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
     <string name="action_example" translatable="false">Example action</string>
     <string name="action_settings" translatable="false">Settings</string>
     <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
+    <eat-comment/>
 
     <string name="c_display_zh_cn">Bing China</string>
     <string name="c_display_row">Bing Global</string>

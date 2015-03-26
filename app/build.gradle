@@ -10,22 +10,72 @@ android {
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"
+
+        // dex突破65535的限制
+//        multiDexEnabled true
+        // 默认是umeng的渠道
+//        manifestPlaceholders = [UMENG_CHANNEL_VALUE: "debug"]
     }
+
+//    lintOptions {
+//        abortOnError false
+//    }
+
+    signingConfigs {
+        debug {
+            // No debug config
+        }
+
+        release {
+//            storeFile file("../doc/keystore.jks")
+//            storePassword ""
+//            keyAlias "L&X"
+//            keyPassword ""
+        }
+    }
+
     buildTypes {
         release {
+            // 不显示Log
+            buildConfigField "boolean", "LOG_DEBUG", "false"
+
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            zipAlignEnabled true
+            // 移除无用的resource文件
+//            shrinkResources true
+            signingConfig signingConfigs.release
+
+            applicationVariants.all { variant ->
+                variant.outputs.each { output ->
+                    def outputFile = output.outputFile
+                    if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                        // 输出apk名称为BingWallpaper_v1.0_d2015-01-15_wandoujia.apk
+                        def fileName = "BingWallpaper_v${defaultConfig.versionName}_d${releaseTime()}_${variant.productFlavors[0].name}.apk"
+                        output.outputFile = new File(outputFile.parent, fileName)
+                    }
+                }
+            }
         }
         debug {
+            // 显示Log
+            buildConfigField "boolean", "LOG_DEBUG", "true"
+
+            versionNameSuffix "-debug"
             applicationIdSuffix ".debug"
             manifestPlaceholders = [UMENG_CHANNEL_VALUE: "debug"]
+            minifyEnabled false
+            zipAlignEnabled false
+            shrinkResources false
+            signingConfig signingConfigs.debug
         }
     }
 
 //    productFlavors {
 //        wandoujia {}
 //        baidu {}
-//        c360 {}
+//        qh360 {}
 //        uc {}
 //        productFlavors.all { flavor ->
 //            flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
@@ -39,22 +89,27 @@ android {
         baidu {
             manifestPlaceholders = [UMENG_CHANNEL_VALUE: "baidu"]
         }
-        c360 {
-            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "c360"]
+        qh360 {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "qh360"]
         }
         uc {
             manifestPlaceholders = [UMENG_CHANNEL_VALUE: "uc"]
         }
-        pro {
-            applicationId = "com.lx.iruanmi.bingwallpaper"
-        }
-        free {
-            applicationId = "com.lx.iruanmi.bingwallpaper"
-        }
+//        pro {
+//            applicationId = "com.lx.iruanmi.bingwallpaper"
+//        }
+//        free {
+//            applicationId = "com.lx.iruanmi.bingwallpaper"
+//        }
     }
+
 //    sourceSets{
 //
 //    }
+}
+
+def releaseTime() {
+    return new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("UTC"))
 }
 
 //sourceSets {
