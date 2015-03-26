@@ -19,7 +19,6 @@ import org.joda.time.format.DateTimeFormat;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.TimeZone;
 
 /**
@@ -178,7 +177,7 @@ public class Utility {
     }
 
     public static DateTime getUpdateDateTimeZHCN() {
-        return DateTime.now()
+        return DateTime.now(DateTimeZone.forTimeZone(TimeZone.getTimeZone("GMT+08:00")))
                 .millisOfDay().setCopy(0)
                 .hourOfDay().setCopy(16);
     }

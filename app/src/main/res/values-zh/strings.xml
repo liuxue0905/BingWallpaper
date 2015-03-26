@@ -8,7 +8,8 @@
 
     <string name="download_size">下载尺寸</string>
 
-    <string name="aa">爱软迷温馨提示：必应国际版北京时间每日下午四时更新下一日图片~</string>
+    <string name="bing_updates_tips">温馨提示：必应国际版每日%1$s更新下一日图片~</string>
+
     <string name="pic_loading">正在加载图片...</string>
     <string name="bing_loading">正在加载必应信息...</string>
     <string name="pic_loaded_failed">加载图片失败！</string>

@@ -26,7 +26,7 @@
     <string name="bing_loading">Loading Picture Info...</string>
     <string name="bing_loaded_failed">Picture Info Loaded Failed!</string>
 
-    <string name="aa">iRuanmi Kindly Reminder：Bing Global updates daily at 00:00 PST(Pacific Standard Time)~</string>
+    <string name="bing_updates_tips">Tips：Bing Global updates daily at %1$s~</string>
 
     <string name="landscape">横屏</string>
     <string name="portrait">竖屏</string>

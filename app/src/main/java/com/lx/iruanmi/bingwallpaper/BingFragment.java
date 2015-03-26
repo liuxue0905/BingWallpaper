@@ -26,7 +26,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import com.google.gson.JsonSyntaxException;
 import com.lx.iruanmi.bingwallpaper.db.Bing;
 import com.lx.iruanmi.bingwallpaper.db.DBUtil;
 import com.lx.iruanmi.bingwallpaper.util.SystemUiHider;
@@ -38,9 +37,9 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 
-import retrofit.RetrofitError;
 import uk.co.senab.photoview.PhotoView;
 
 
@@ -114,7 +113,7 @@ public class BingFragment extends Fragment {
      * The instance of the {@link SystemUiHider} for this activity.
      */
     private SystemUiHider mSystemUiHider;
-//    private Bing mBing;
+    //    private Bing mBing;
     private GetBingTask mGetBingTask;
 
     public BingFragment() {
@@ -422,7 +421,6 @@ public class BingFragment extends Fragment {
     }
 
 
-
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -461,7 +459,6 @@ public class BingFragment extends Fragment {
 
         @Override
         protected Bing doInBackground(Void... params) {
-            mDate = "2015-03-28";
             try {
                 DateTime dateTimeZHCN = Utility.getDateTimeLocalToZHCN(getActivity(), mDate);
                 String dateZHCN = dateTimeZHCN.toString(getString(R.string.bing_date_formate));
@@ -521,25 +518,32 @@ public class BingFragment extends Fragment {
 //        }
 
         void onPostExecute(Exception e) {
+            if (isCancelled()) {
+                return;
+            }
+
             pb.setVisibility(View.INVISIBLE);
             btnRefresh.setVisibility(View.VISIBLE);
             tvProgress.setVisibility(View.VISIBLE);
             tvProgress.setText(tvProgress.getContext().getString(R.string.bing_loaded_failed));
-
-            Log.d(TAG, "e.getClass():" + e.getClass());
 
             if (e instanceof retrofit.RetrofitError) {
                 retrofit.RetrofitError re = (retrofit.RetrofitError) e;
 
                 switch (re.getKind()) {
                     case CONVERSION:
-                        boolean isBingUpdated = Utility.isBingUpdated(getActivity(), mDate);
-                        Log.d(TAG, "isBingUpdated:" + isBingUpdated);
+//                        boolean isBingUpdated = Utility.isBingUpdated(getActivity(), mDate);
+//                        Log.d(TAG, "isBingUpdated:" + isBingUpdated);
 
                         DateTime updateDateTimeZHCN = Utility.getUpdateDateTimeZHCN();
+                        DateTime updateDateTimeDefault = updateDateTimeZHCN.toDateTime(DateTimeZone.getDefault());
 
                         Log.d(TAG, "updateDateTimeZHCN:" + updateDateTimeZHCN);
-                        Log.d(TAG, "updateDateTimeZHCN.toLocalDateTime():" + updateDateTimeZHCN.toLocalDateTime());
+                        Log.d(TAG, "updateDateTimeDefault:" + updateDateTimeDefault);
+
+                        String updateDateTimeString = updateDateTimeDefault.toString("HH:mm");
+                        Toast.makeText(getActivity(), getString(R.string.bing_updates_tips, updateDateTimeString), Toast.LENGTH_LONG).show();
+
                         break;
                     default:
                         break;
