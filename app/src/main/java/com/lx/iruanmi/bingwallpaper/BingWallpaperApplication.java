@@ -13,6 +13,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.squareup.okhttp.OkHttpClient;
+import com.umeng.analytics.MobclickAgent;
 
 /**
  * Created by liuxue on 2015/3/15.
@@ -27,6 +28,35 @@ public class BingWallpaperApplication extends Application {
 
     public static BingWallpaperApplication getInstance() {
         return ourInstance;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        ourInstance = this;
+
+//        MobclickAgent.setDebugMode(true);
+        MobclickAgent.openActivityDurationTrack(false);
+
+        initImageLoader(getApplicationContext());
+
+        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "bing-db", null);
+        db = helper.getWritableDatabase();
+        daoMaster = new DaoMaster(db);
+        daoSession = daoMaster.newSession();
+        bingDao = daoSession.getBingDao();
+    }
+
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+
+        ourInstance = null;
+
+        daoSession.clear();
+        daoMaster = null;
+        db.close();
     }
 
     public static void initImageLoader(Context context) {
@@ -48,37 +78,11 @@ public class BingWallpaperApplication extends Application {
         ImageLoader.getInstance().init(config.build());
     }
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        ourInstance = this;
-
-        initImageLoader(getApplicationContext());
-
-        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "bing-db", null);
-        db = helper.getWritableDatabase();
-        daoMaster = new DaoMaster(db);
-        daoSession = daoMaster.newSession();
-        bingDao = daoSession.getBingDao();
+    public DaoSession getDaoSession() {
+        return daoSession;
     }
 
     public BingDao getBingDao() {
         return bingDao;
-    }
-
-    @Override
-    public void onTerminate() {
-        super.onTerminate();
-
-        ourInstance = null;
-
-        daoSession.clear();
-        daoMaster = null;
-        db.close();
-    }
-
-    public DaoSession getDaoSession() {
-        return daoSession;
     }
 }

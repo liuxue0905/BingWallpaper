@@ -24,8 +24,8 @@
             </intent-filter>
         </activity>
 
-        <!--<meta-data android:value="" android:name="UMENG_APPKEY"></meta-data>-->
-        <!--<meta-data android:value="${UMENG_CHANNEL_VALUE}" android:name="UMENG_CHANNEL"/>-->
+        <meta-data android:value="551376cefd98c5e45f000051" android:name="UMENG_APPKEY"></meta-data>
+        <meta-data android:value="${UMENG_CHANNEL_VALUE}" android:name="UMENG_CHANNEL"/>
 
     </application>
 

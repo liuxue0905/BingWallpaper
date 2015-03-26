@@ -26,10 +26,14 @@ import android.widget.CalendarView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.lx.iruanmi.bingwallpaper.util.MobclickAgentHelper;
 import com.lx.iruanmi.bingwallpaper.util.Utility;
+import com.umeng.analytics.MobclickAgent;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
+
+import java.util.HashMap;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -38,7 +42,7 @@ import org.joda.time.format.DateTimeFormat;
  */
 public class NavigationDrawerFragment extends Fragment {
 
-    private static final String TAG = "NavigationDrawerFragment";
+    private static final String TAG = NavigationDrawerFragment.class.getSimpleName();
 
 //    /**
 //     * Remember the position of the selected item.
@@ -99,6 +103,18 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart(TAG); //统计页面
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd(TAG);
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         // Indicate that this fragment would like to influence the set of actions in the action bar.
@@ -131,6 +147,10 @@ public class NavigationDrawerFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 mCurrentSelectedCountry = getCountry(position);
 
+                HashMap<String, String> map = new HashMap<String, String>();
+                map.put("country", mCurrentSelectedCountry);
+                MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_NAVIGATION_DRAWER_FRAGMENT_COUNTRY, map);
+
                 updateWidgets();
             }
 
@@ -151,6 +171,8 @@ public class NavigationDrawerFragment extends Fragment {
                     public void onDateWidgetFragmentInteraction(int year, int monthOfYear, int dayOfMonth) {
                         mCurrentSelectedDate = new DateTime(year, monthOfYear + 1, dayOfMonth, 0, 0).toString(getString(R.string.bing_date_formate));
 
+                        MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_NAVIGATION_DRAWER_FRAGMENT_DATE_BUTTON);
+
                         updateWidgets();
                     }
                 });
@@ -163,6 +185,8 @@ public class NavigationDrawerFragment extends Fragment {
             @Override
             public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
                 mCurrentSelectedDate = new DateTime(year, month + 1, dayOfMonth, 0, 0).toString(getString(R.string.bing_date_formate));
+
+                MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_NAVIGATION_DRAWER_DATE_CALENDAR);
 
                 updateWidgets();
             }
@@ -211,6 +235,8 @@ public class NavigationDrawerFragment extends Fragment {
                     return;
                 }
 
+                MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_NAVIGATION_DRAWER_ON_DRAWER_CLOSED);
+
                 getActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
 
                 selectItem();
@@ -222,6 +248,8 @@ public class NavigationDrawerFragment extends Fragment {
                 if (!isAdded()) {
                     return;
                 }
+
+                MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_NAVIGATION_DRAWER_ON_DRAWER_OPENED);
 
                 if (!mUserLearnedDrawer) {
                     // The user manually opened the drawer; store this flag to prevent auto-showing

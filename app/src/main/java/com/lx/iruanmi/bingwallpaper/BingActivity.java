@@ -11,6 +11,7 @@ import android.view.MenuItem;
 
 import com.lx.iruanmi.bingwallpaper.util.Utility;
 import com.lx.iruanmi.bingwallpaper.widget.HackyDrawerLayout;
+import com.umeng.analytics.MobclickAgent;
 
 
 public class BingActivity extends ActionBarActivity
@@ -48,6 +49,18 @@ public class BingActivity extends ActionBarActivity
                 (HackyDrawerLayout) findViewById(R.id.drawer_layout));
 
 //        ((DrawerLayout) findViewById(R.id.drawer_layout)).setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);       //统计时长
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     @Override

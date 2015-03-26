@@ -28,6 +28,7 @@ import android.widget.ToggleButton;
 
 import com.lx.iruanmi.bingwallpaper.db.Bing;
 import com.lx.iruanmi.bingwallpaper.db.DBUtil;
+import com.lx.iruanmi.bingwallpaper.util.MobclickAgentHelper;
 import com.lx.iruanmi.bingwallpaper.util.SystemUiHider;
 import com.lx.iruanmi.bingwallpaper.util.Utility;
 import com.lx.iruanmi.bingwallpaper.widget.BingHpBottomCellView;
@@ -35,10 +36,13 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+import com.umeng.analytics.MobclickAgent;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
+
+import java.util.HashMap;
 
 import uk.co.senab.photoview.PhotoView;
 
@@ -53,7 +57,7 @@ import uk.co.senab.photoview.PhotoView;
  */
 public class BingFragment extends Fragment {
 
-    private static final String TAG = "BingFragment";
+    private static final String TAG = BingFragment.class.getSimpleName();
 
     // parameter arguments
     // the fragment initialization parameters
@@ -152,6 +156,18 @@ public class BingFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart(TAG); //统计页面
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd(TAG);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -230,6 +246,10 @@ public class BingFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 getBing();
+
+                HashMap<String,String> map = new HashMap<String,String>();
+                map.put("isChecked", String.valueOf(isChecked));
+                MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_BING_CB_LANDSCAPE_PORTRAIT, map);
             }
         });
 
@@ -247,6 +267,10 @@ public class BingFragment extends Fragment {
                         mSystemUiHider.show();
                     }
                 }
+
+                HashMap<String,String> map = new HashMap<String,String>();
+                map.put("isChecked", String.valueOf(isChecked));
+                MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_BING_CB_FULL_SMALL, map);
             }
         });
 
@@ -259,6 +283,8 @@ public class BingFragment extends Fragment {
                 dateTime = dateTime.minusDays(1);
                 Log.d(TAG, "dateTime:" + dateTime);
                 mListener.onBingFragmentDateChanged(dateTime.toString(getString(R.string.bing_date_formate)), mCountry);
+
+                MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_BING_BTN_PREVIOUS);
             }
         });
 
@@ -271,6 +297,8 @@ public class BingFragment extends Fragment {
                 dateTime = dateTime.plusDays(1);
                 Log.d(TAG, "dateTime:" + dateTime);
                 mListener.onBingFragmentDateChanged(dateTime.toString(getString(R.string.bing_date_formate)), mCountry);
+
+                MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_BING_BTN_NEXT);
             }
         });
 
@@ -393,6 +421,8 @@ public class BingFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
+                MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_BING_BTN_DOWN);
+
                 DownloadManager manager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
 
                 boolean has = Utility.hasExternalStoragePublicPicture(subPath);

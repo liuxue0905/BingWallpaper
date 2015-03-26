@@ -18,6 +18,7 @@ android {
         }
         debug {
             applicationIdSuffix ".debug"
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "debug"]
         }
     }
 
@@ -31,26 +32,26 @@ android {
 //        }
 //    }
 
-//    productFlavors {
-//        wandoujia {
-//            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "wandoujia"]
-//        }
-//        baidu {
-//            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "baidu"]
-//        }
-//        c360 {
-//            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "c360"]
-//        }
-//        uc {
-//            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "uc"]
-//        }
-//        pro {
-//            applicationId = "com.lx.iruanmi.bingwallpaper"
-//        }
-//        free {
-//            applicationId = "com.lx.iruanmi.bingwallpaper"
-//        }
-//    }
+    productFlavors {
+        wandoujia {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "wandoujia"]
+        }
+        baidu {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "baidu"]
+        }
+        c360 {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "c360"]
+        }
+        uc {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "uc"]
+        }
+        pro {
+            applicationId = "com.lx.iruanmi.bingwallpaper"
+        }
+        free {
+            applicationId = "com.lx.iruanmi.bingwallpaper"
+        }
+    }
 //    sourceSets{
 //
 //    }
