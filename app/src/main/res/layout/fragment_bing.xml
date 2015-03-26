@@ -11,11 +11,17 @@
         android:scaleType="fitCenter" />
 
     <RelativeLayout
+        android:id="@+id/layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin"
         android:layout_gravity="center"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="?attr/colorPrimaryDark">
 
         <ProgressBar
             android:id="@+id/pb"
@@ -37,6 +43,18 @@
             android:minHeight="0dp"
             android:visibility="invisible"
             android:background="@drawable/ic_menu_refresh"/>
+
+        <TextView
+            android:id="@+id/tvProgress2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_alignTop="@+id/pb"
+            android:layout_alignBottom="@+id/pb"
+            android:layout_alignLeft="@+id/pb"
+            android:layout_alignRight="@+id/pb"
+            android:layout_centerHorizontal="true"
+            android:text="50%"/>
 
         <TextView
             android:id="@+id/tvProgress"
