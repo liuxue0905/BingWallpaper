@@ -95,6 +95,12 @@ android {
         uc {
             manifestPlaceholders = [UMENG_CHANNEL_VALUE: "uc"]
         }
+        hiapk {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "hiapk"]
+        }
+        zs91 {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "zs91"]
+        }
         other {
             manifestPlaceholders = [UMENG_CHANNEL_VALUE: "other"]
         }
