@@ -95,6 +95,9 @@ android {
         uc {
             manifestPlaceholders = [UMENG_CHANNEL_VALUE: "uc"]
         }
+        other {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "other"]
+        }
 //        pro {
 //            applicationId = "com.lx.iruanmi.bingwallpaper"
 //        }
