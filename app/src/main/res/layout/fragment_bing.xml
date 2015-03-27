@@ -11,7 +11,7 @@
         android:scaleType="fitCenter" />
 
     <RelativeLayout
-        android:id="@+id/layout"
+        android:id="@+id/layoutProgress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -47,7 +47,7 @@
             android:background="@drawable/ic_menu_refresh"/>
 
         <TextView
-            android:id="@+id/tvProgress2"
+            android:id="@+id/tvProgress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -58,10 +58,10 @@
             android:layout_alignLeft="@+id/pb"
             android:layout_alignRight="@+id/pb"
             android:layout_centerHorizontal="true"
-            android:text="50%"/>
+            android:visibility="gone"/>
 
         <TextView
-            android:id="@+id/tvProgress"
+            android:id="@+id/tvInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/pb"

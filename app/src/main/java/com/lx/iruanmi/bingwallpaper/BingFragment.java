@@ -109,8 +109,10 @@ public class BingFragment extends Fragment {
     private String mCountry;
     private String mDate;
     private PhotoView viewPhotoView;
+    private View layoutProgress;
     private ProgressBar pb;
     private Button btnRefresh;
+    private TextView tvInfo;
     private TextView tvProgress;
     private BingHpBottomCellView viewBingHpBottomCellView;
     private OnBingFragmentInteractionListener mListener;
@@ -193,11 +195,12 @@ public class BingFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         viewPhotoView = (PhotoView) view.findViewById(R.id.viewPhotoView);
+        layoutProgress = view.findViewById(R.id.layoutProgress);
         pb = (ProgressBar) view.findViewById(R.id.pb);
         btnRefresh = (Button) view.findViewById(R.id.btnRefresh);
+        tvInfo = (TextView) view.findViewById(R.id.tvInfo);
         tvProgress = (TextView) view.findViewById(R.id.tvProgress);
         viewBingHpBottomCellView = (BingHpBottomCellView) view.findViewById(R.id.viewBingHpBottomCellView);
-
 
         mSystemUiHider
                 .setOnVisibilityChangeListener(new SystemUiHider.OnVisibilityChangeListener() {
@@ -390,18 +393,23 @@ public class BingFragment extends Fragment {
             public void onLoadingStarted(String imageUri, View view) {
                 super.onLoadingStarted(imageUri, view);
 
+                layoutProgress.setVisibility(View.VISIBLE);
                 pb.setVisibility(View.VISIBLE);
                 tvProgress.setVisibility(View.VISIBLE);
-                tvProgress.setText(tvProgress.getContext().getString(R.string.pic_loading));
+                tvProgress.setText(null);
+                tvInfo.setVisibility(View.VISIBLE);
+                tvInfo.setText(tvInfo.getContext().getString(R.string.pic_loading));
             }
 
             @Override
             public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
                 super.onLoadingFailed(imageUri, view, failReason);
 
+                layoutProgress.setVisibility(View.VISIBLE);
                 pb.setVisibility(View.GONE);
-                tvProgress.setVisibility(View.VISIBLE);
-                tvProgress.setText(tvProgress.getContext().getString(R.string.pic_loaded_failed));
+                tvProgress.setVisibility(View.GONE);
+                tvInfo.setVisibility(View.VISIBLE);
+                tvInfo.setText(tvInfo.getContext().getString(R.string.pic_loaded_failed));
             }
 
             @Override
@@ -410,21 +418,27 @@ public class BingFragment extends Fragment {
 
                 viewPhotoView.setImageBitmap(loadedImage);
 
+                layoutProgress.setVisibility(View.GONE);
                 pb.setVisibility(View.GONE);
                 tvProgress.setVisibility(View.GONE);
+                tvInfo.setVisibility(View.GONE);
             }
 
             @Override
             public void onLoadingCancelled(String imageUri, View view) {
                 super.onLoadingCancelled(imageUri, view);
 
+                layoutProgress.setVisibility(View.GONE);
                 pb.setVisibility(View.GONE);
                 tvProgress.setVisibility(View.GONE);
+                tvInfo.setVisibility(View.GONE);
             }
         }, new ImageLoadingProgressListener() {
             @Override
             public void onProgressUpdate(String imageUri, View view, int current, int total) {
-
+                Log.d(TAG, String.format("onProgressUpdate() current:%d total:%d", current, total));
+                Log.d(TAG, (int)(current * 100.0 / total) + "%");
+                tvProgress.setText((int)(current * 100.0 / total) + "%");
             }
         });
 
@@ -492,10 +506,11 @@ public class BingFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            layoutProgress.setVisibility(View.VISIBLE);
             pb.setVisibility(View.VISIBLE);
             btnRefresh.setVisibility(View.GONE);
-            tvProgress.setVisibility(View.VISIBLE);
-            tvProgress.setText(getString(R.string.bing_loading));
+            tvInfo.setVisibility(View.VISIBLE);
+            tvInfo.setText(getString(R.string.bing_loading));
         }
 
         @Override
@@ -535,8 +550,9 @@ public class BingFragment extends Fragment {
             super.onPostExecute(bing);
 
             if (isCancelled()) {
+                layoutProgress.setVisibility(View.GONE);
                 pb.setVisibility(View.INVISIBLE);
-                tvProgress.setVisibility(View.GONE);
+                tvInfo.setVisibility(View.GONE);
                 return;
             }
 
@@ -544,7 +560,7 @@ public class BingFragment extends Fragment {
 
             if (bing == null) {
 //                pb.setVisibility(View.GONE);
-//                tvProgress.setVisibility(View.GONE);
+//                tvInfo.setVisibility(View.GONE);
                 return;
             }
 
@@ -563,10 +579,11 @@ public class BingFragment extends Fragment {
                 return;
             }
 
+            layoutProgress.setVisibility(View.VISIBLE);
             pb.setVisibility(View.INVISIBLE);
             btnRefresh.setVisibility(View.VISIBLE);
-            tvProgress.setVisibility(View.VISIBLE);
-            tvProgress.setText(tvProgress.getContext().getString(R.string.bing_loaded_failed));
+            tvInfo.setVisibility(View.VISIBLE);
+            tvInfo.setText(tvInfo.getContext().getString(R.string.bing_loaded_failed));
 
             if (e instanceof retrofit.RetrofitError) {
                 retrofit.RetrofitError re = (retrofit.RetrofitError) e;
