@@ -14,6 +14,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.squareup.okhttp.OkHttpClient;
 import com.umeng.analytics.MobclickAgent;
+import com.umeng.update.UpdateConfig;
 
 /**
  * Created by liuxue on 2015/3/15.
@@ -37,6 +38,7 @@ public class BingWallpaperApplication extends Application {
         ourInstance = this;
 
 //        MobclickAgent.setDebugMode(true);
+//        UpdateConfig.setDebug(true);
         MobclickAgent.openActivityDurationTrack(false);
 
         initImageLoader(getApplicationContext());
