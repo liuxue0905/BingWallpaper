@@ -1,5 +1,6 @@
 package com.lx.iruanmi.bingwallpaper;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
@@ -8,10 +9,15 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.lx.iruanmi.bingwallpaper.util.Utility;
 import com.lx.iruanmi.bingwallpaper.widget.HackyDrawerLayout;
 import com.umeng.analytics.MobclickAgent;
+import com.umeng.update.UmengUpdateAgent;
+import com.umeng.update.UmengUpdateListener;
+import com.umeng.update.UpdateResponse;
+import com.umeng.update.UpdateStatus;
 
 
 public class BingActivity extends ActionBarActivity
@@ -29,10 +35,14 @@ public class BingActivity extends ActionBarActivity
      */
     private CharSequence mTitle;
 
+    private Context mContext;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bing);
+
+        mContext = this;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
@@ -101,7 +111,7 @@ public class BingActivity extends ActionBarActivity
             // Only show items in the action bar relevant to this screen
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
-//            getMenuInflater().inflate(R.menu.bing, menu);
+            getMenuInflater().inflate(R.menu.bing, menu);
             restoreActionBar();
             return true;
         }
@@ -117,6 +127,33 @@ public class BingActivity extends ActionBarActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        }
+
+        else if (id == R.id.action_update) {
+            UmengUpdateAgent.setUpdateOnlyWifi(false);
+            UmengUpdateAgent.forceUpdate(this);
+            UmengUpdateAgent.setUpdateListener(new UmengUpdateListener() {
+
+                @Override
+                public void onUpdateReturned(int i, UpdateResponse updateResponse) {
+                    Log.d(TAG, "onUpdateReturned() i:" + i + ",updateResponse:" + updateResponse);
+                    switch (i) {
+                        case UpdateStatus.Yes: // has update
+                            UmengUpdateAgent.showUpdateDialog(mContext, updateResponse);
+                            break;
+                        case UpdateStatus.No: // has no update
+                            Toast.makeText(mContext, "没有更新", Toast.LENGTH_SHORT).show();
+                            break;
+                        case UpdateStatus.NoneWifi: // none wifi
+                            Toast.makeText(mContext, "没有wifi连接， 只在wifi下更新", Toast.LENGTH_SHORT).show();
+                            break;
+                        case UpdateStatus.Timeout: // time out
+                            Toast.makeText(mContext, "超时", Toast.LENGTH_SHORT).show();
+                            break;
+                    }
+                }
+            });
             return true;
         }
 

@@ -15,4 +15,6 @@
     <string name="pic_loaded_failed">加载图片失败！</string>
     <string name="bing_loaded_failed">加载必应信息失败！</string>
     <string name="download_successful">下载成功！</string>
+
+    <string name="action_update">检查更新</string>
 </resources>

@@ -29,6 +29,7 @@ import android.widget.Toast;
 import com.lx.iruanmi.bingwallpaper.util.MobclickAgentHelper;
 import com.lx.iruanmi.bingwallpaper.util.Utility;
 import com.umeng.analytics.MobclickAgent;
+import com.umeng.update.UmengUpdateAgent;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -342,7 +343,7 @@ public class NavigationDrawerFragment extends Fragment {
         // If the drawer is open, show the global app actions in the action bar. See also
         // showGlobalContextActionBar, which controls the top-left area of the action bar.
         if (mDrawerLayout != null && isDrawerOpen()) {
-//            inflater.inflate(R.menu.global, menu);
+            inflater.inflate(R.menu.global, menu);
             showGlobalContextActionBar();
         }
         super.onCreateOptionsMenu(menu, inflater);
@@ -354,8 +355,14 @@ public class NavigationDrawerFragment extends Fragment {
             return true;
         }
 
-        if (item.getItemId() == R.id.action_example) {
-            Toast.makeText(getActivity(), "Example action.", Toast.LENGTH_SHORT).show();
+//        if (item.getItemId() == R.id.action_example) {
+//            Toast.makeText(getActivity(), "Example action.", Toast.LENGTH_SHORT).show();
+//            return true;
+//        }
+
+        else if (item.getItemId() == R.id.action_update) {
+            UmengUpdateAgent.setUpdateOnlyWifi(false);
+            UmengUpdateAgent.forceUpdate(getActivity());
             return true;
         }
 
