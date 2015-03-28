@@ -8,11 +8,11 @@
         <!--app:showAsAction="withText|ifRoom"-->
         <!--android:title="@string/action_example" />-->
     <!--android:showAsAction="never"-->
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        app:showAsAction="never"
-        android:title="@string/action_settings" />
+    <!--<item-->
+        <!--android:id="@+id/action_settings"-->
+        <!--android:orderInCategory="100"-->
+        <!--app:showAsAction="never"-->
+        <!--android:title="@string/action_settings" />-->
     <item
         android:id="@+id/action_update"
         android:orderInCategory="100"

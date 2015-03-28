@@ -8,13 +8,13 @@ android {
         applicationId "com.lx.iruanmi.bingwallpaper"
         minSdkVersion 15
         targetSdkVersion 21
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.0.1"
 
         // dex突破65535的限制
 //        multiDexEnabled true
         // 默认是umeng的渠道
-//        manifestPlaceholders = [UMENG_CHANNEL_VALUE: "debug"]
+        manifestPlaceholders = [UMENG_CHANNEL_VALUE: "umeng"]
     }
 
 //    lintOptions {
@@ -64,7 +64,7 @@ android {
 
             versionNameSuffix "-debug"
             applicationIdSuffix ".debug"
-//            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "debug"]
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "debug"]
             minifyEnabled false
             zipAlignEnabled false
             shrinkResources false
@@ -100,9 +100,6 @@ android {
         }
         zs91 {
             manifestPlaceholders = [UMENG_CHANNEL_VALUE: "zs91"]
-        }
-        other {
-            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "other"]
         }
 //        pro {
 //            applicationId = "com.lx.iruanmi.bingwallpaper"

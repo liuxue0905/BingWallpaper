@@ -132,6 +132,7 @@ public class BingActivity extends ActionBarActivity
 
         else if (id == R.id.action_update) {
             UmengUpdateAgent.setUpdateOnlyWifi(false);
+//            UmengUpdateAgent.setSlotId("54357");
             UmengUpdateAgent.forceUpdate(this);
             UmengUpdateAgent.setUpdateListener(new UmengUpdateListener() {
 
