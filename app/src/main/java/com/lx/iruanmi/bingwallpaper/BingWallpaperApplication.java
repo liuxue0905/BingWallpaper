@@ -37,8 +37,8 @@ public class BingWallpaperApplication extends Application {
 
         ourInstance = this;
 
-        UpdateConfig.setDebug(true);
-        MobclickAgent.setDebugMode(true);
+//        UpdateConfig.setDebug(true);
+//        MobclickAgent.setDebugMode(true);
         MobclickAgent.openActivityDurationTrack(false);
 
         initImageLoader(getApplicationContext());
