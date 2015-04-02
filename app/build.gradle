@@ -17,6 +17,12 @@ android {
         manifestPlaceholders = [UMENG_CHANNEL_VALUE: "umeng"]
     }
 
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+
 //    lintOptions {
 //        abortOnError false
 //    }
@@ -27,9 +33,9 @@ android {
         }
 
         release {
-//            storeFile file("../doc/keystore.jks")
+            storeFile file("../doc/keystore.jks")
 //            storePassword ""
-//            keyAlias "L&X"
+            keyAlias "L&X"
 //            keyPassword ""
         }
     }
@@ -64,7 +70,7 @@ android {
 
             versionNameSuffix "-debug"
             applicationIdSuffix ".debug"
-            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "debug"]
+//            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "debug"]
             minifyEnabled false
             zipAlignEnabled false
             shrinkResources false
@@ -97,24 +103,11 @@ android {
 ////        }
 //    }
 
-//    sourceSets{
-//
-//    }
 }
 
 def releaseTime() {
     return new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("UTC"))
 }
-
-//sourceSets {
-//    main {
-//        java {
-//            srcDir 'src'
-//            srcDir 'src-gen'
-//            srcDir 'gen'
-//        }
-//    }
-//}
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
