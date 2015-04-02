@@ -7,13 +7,12 @@ import android.util.Log;
 
 import com.lx.iruanmi.bingwallpaper.db.Bing;
 import com.lx.iruanmi.bingwallpaper.db.BingDao;
+import com.lx.iruanmi.bingwallpaper.db.DBUtil;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 /**
@@ -44,9 +43,14 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         Log.d("LX", "bing:" + bing);
     }
 
-    private void adminAjaxGetBing(String y, String m, String d, String c) {
+    private void adminAjaxGetBing(String ymd, String y, String m, String d, String c) {
+        Bing bing = DBUtil.getBing(ymd, c);
+        if (bing != null) {
+            return;
+        }
+
         try {
-            Bing bing = mINetwork.adminAjax("get_bing", y, m, d, c);
+            bing = mINetwork.adminAjax("get_bing", y, m, d, c);
             mBingDao.insertOrReplace(bing);
         } catch (Exception e) {
             e.printStackTrace();
@@ -69,18 +73,19 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
                 .withZone(DateTimeZone.forTimeZone(TimeZone.getTimeZone("GMT+08:00")))
                 .parseDateTime(DATE_ROW_MIN);
         DateTime nowDateTimeZHCN = DateTime.now(DateTimeZone.forTimeZone(TimeZone.getTimeZone("GMT+08:00")));
-        DateTime currentDateTime = minDateTimeZHCN;
+        DateTime currentDateTimeZHCN = minDateTimeZHCN;
 
-        while (!currentDateTime.isAfter(nowDateTimeZHCN)) {
+        while (!currentDateTimeZHCN.isAfter(nowDateTimeZHCN)) {
 
-            String y = String.valueOf(currentDateTime.getYear());
-            String m = String.valueOf(currentDateTime.getMonthOfYear());
-            String d = String.valueOf(currentDateTime.getDayOfMonth());
+            String ymd = currentDateTimeZHCN.toString("yy-MM-dd");
+            String y = String.valueOf(currentDateTimeZHCN.getYear());
+            String m = String.valueOf(currentDateTimeZHCN.getMonthOfYear());
+            String d = String.valueOf(currentDateTimeZHCN.getDayOfMonth());
 
-            adminAjaxGetBing(y, m, d, "ZH-CN");
-            adminAjaxGetBing(y, m, d, "ROW");
+            adminAjaxGetBing(ymd, y, m, d, "ZH-CN");
+            adminAjaxGetBing(ymd, y, m, d, "ROW");
 
-            currentDateTime = currentDateTime.plusDays(1);
+            currentDateTimeZHCN = currentDateTimeZHCN.plusDays(1);
         }
     }
 }
