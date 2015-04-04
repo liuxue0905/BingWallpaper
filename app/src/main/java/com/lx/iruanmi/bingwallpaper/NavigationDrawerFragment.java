@@ -105,8 +105,15 @@ public class NavigationDrawerFragment extends Fragment {
 
     @Override
     public void onResume() {
+        Log.d(TAG, "onResume()");
         super.onResume();
         MobclickAgent.onPageStart(TAG); //统计页面
+
+        if (!isAdded()) {
+            return;
+        }
+
+        updateWidgets();
     }
 
     @Override
@@ -125,6 +132,7 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView");
         View view = inflater.inflate(
                 R.layout.fragment_navigation_drawer, container, false);
         return view;
@@ -132,6 +140,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onViewCreated");
         super.onViewCreated(view, savedInstanceState);
 
         spinnerC = (Spinner) view.findViewById(R.id.spinnerC);
@@ -170,6 +179,10 @@ public class NavigationDrawerFragment extends Fragment {
 
                     @Override
                     public void onDateWidgetFragmentInteraction(int year, int monthOfYear, int dayOfMonth) {
+                        if (!isAdded()) {
+                            return;
+                        }
+
                         mCurrentSelectedDate = new DateTime(year, monthOfYear + 1, dayOfMonth, 0, 0).toString(getString(R.string.bing_date_formate));
 
                         MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_NAVIGATION_DRAWER_FRAGMENT_DATE_BUTTON);
@@ -185,6 +198,10 @@ public class NavigationDrawerFragment extends Fragment {
 
             @Override
             public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
+                if (!isAdded()) {
+                    return;
+                }
+
                 mCurrentSelectedDate = new DateTime(year, month + 1, dayOfMonth, 0, 0).toString(getString(R.string.bing_date_formate));
 
                 MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_NAVIGATION_DRAWER_DATE_CALENDAR);
