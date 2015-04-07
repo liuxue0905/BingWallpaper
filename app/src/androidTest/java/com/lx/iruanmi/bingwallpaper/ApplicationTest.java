@@ -77,7 +77,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
 
         while (!currentDateTimeZHCN.isAfter(nowDateTimeZHCN)) {
 
-            String ymd = currentDateTimeZHCN.toString("yy-MM-dd");
+            String ymd = currentDateTimeZHCN.toString("yyyy-MM-dd");
             String y = String.valueOf(currentDateTimeZHCN.getYear());
             String m = String.valueOf(currentDateTimeZHCN.getMonthOfYear());
             String d = String.valueOf(currentDateTimeZHCN.getDayOfMonth());
