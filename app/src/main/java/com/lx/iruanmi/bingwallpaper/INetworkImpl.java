@@ -31,6 +31,7 @@ public class INetworkImpl implements INetwork {
 //                        request.addHeader("Cache-Control", "public, max-age=900");
 //                    }
 //                })
+//                .setConverter()
                 .build();
 
         mINetwork = restAdapter.create(INetwork.class);
