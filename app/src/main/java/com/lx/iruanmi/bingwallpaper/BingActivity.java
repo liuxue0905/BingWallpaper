@@ -19,7 +19,6 @@ import com.umeng.update.UmengUpdateListener;
 import com.umeng.update.UpdateResponse;
 import com.umeng.update.UpdateStatus;
 
-
 public class BingActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, BingFragment.OnBingFragmentInteractionListener {
 
@@ -155,6 +154,11 @@ public class BingActivity extends ActionBarActivity
                     }
                 }
             });
+            return true;
+        }
+
+        else if (id == R.id.action_doudoublog) {
+            Utility.actionDoudouBlog(this);
             return true;
         }
 

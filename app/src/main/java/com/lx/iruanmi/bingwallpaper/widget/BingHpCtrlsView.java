@@ -17,6 +17,9 @@ import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.format.DateTimeFormat;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 /**
  * TODO: document your custom view class.
  */
@@ -24,10 +27,15 @@ public class BingHpCtrlsView extends LinearLayout {
 
     private static final String TAG = "BingHpCtrlsView";
 
+    @InjectView(R.id.cbHpcFullSmall)
     public CheckBox cbHpcFullSmall;
+    @InjectView(R.id.cbHpcLandscapePortrait)
     public CheckBox cbHpcLandscapePortrait;
+    @InjectView(R.id.btnHpcPrevious)
     public Button btnHpcPrevious;
+    @InjectView(R.id.btnHpcNext)
     public Button btnHpcNext;
+    @InjectView(R.id.btnHpcDown)
     public Button btnHpcDown;
 
     public BingHpCtrlsView(Context context) {
@@ -49,21 +57,12 @@ public class BingHpCtrlsView extends LinearLayout {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public BingHpCtrlsView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        init(attrs, -1);
     }
 
     private void init(AttributeSet attrs, int defStyle) {
         inflate(getContext(), R.layout.view_hp_ctrls, this);
-    }
-
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-
-        cbHpcFullSmall = (CheckBox) findViewById(R.id.cbHpcFullSmall);
-        cbHpcLandscapePortrait = (CheckBox) findViewById(R.id.cbHpcLandscapePortrait);
-        btnHpcPrevious = (Button) findViewById(R.id.btnHpcPrevious);
-        btnHpcNext = (Button) findViewById(R.id.btnHpcNext);
-        btnHpcDown = (Button) findViewById(R.id.btnHpcDown);
+        ButterKnife.inject(this);
     }
 
     public void bind(String date, Bing bing) {

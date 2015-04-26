@@ -13,6 +13,9 @@ import com.lx.iruanmi.bingwallpaper.db.Bing;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 /**
  * TODO: document your custom view class.
  */
@@ -20,7 +23,9 @@ public class BingMusCardView extends LinearLayout {
 
     private static final String TAG = "BingMusCardContentView";
 
+    @InjectView(R.id.tvTitle)
     public TextView tvTitle;
+    @InjectView(R.id.tvCopyright)
     public TextView tvCopyright;
 
     public BingMusCardView(Context context) {
@@ -40,14 +45,7 @@ public class BingMusCardView extends LinearLayout {
 
     private void init(AttributeSet attrs, int defStyle) {
         inflate(getContext(), R.layout.view_bing_muscard, this);
-    }
-
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-
-        tvTitle = (TextView) findViewById(R.id.tvTitle);
-        tvCopyright = (TextView) findViewById(R.id.tvCopyright);
+        ButterKnife.inject(this);
     }
 
     public void bind(Bing bing) {

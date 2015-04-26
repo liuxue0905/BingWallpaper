@@ -8,8 +8,8 @@ android {
         applicationId "com.lx.iruanmi.bingwallpaper"
         minSdkVersion 15
         targetSdkVersion 21
-        versionCode 3
-        versionName "1.0.2"
+        versionCode 4
+        versionName "1.0.3"
 
         // dex突破65535的限制
         multiDexEnabled true
@@ -58,7 +58,7 @@ android {
                     def outputFile = output.outputFile
                     if (outputFile != null && outputFile.name.endsWith('.apk')) {
                         // 输出apk名称为BingWallpaper_v1.0_d2015-01-15_wandoujia.apk
-                        def fileName = "BingWallpaper_v${defaultConfig.versionName}_d${releaseTime()}_${variant.productFlavors[0].name}.apk"
+                        def fileName = "BingWallpaper_v${defaultConfig.versionName}(${defaultConfig.versionCode})_${releaseTime()}_${variant.productFlavors[0].name}.apk"
                         output.outputFile = new File(outputFile.parent, fileName)
                     }
                 }
@@ -122,4 +122,7 @@ dependencies {
     compile 'com.umeng.analytics:analytics:latest.integration'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.3'
     compile 'joda-time:joda-time:2.3'
+    compile 'com.jakewharton:butterknife:6.1.0'
+//    compile 'com.github.bumptech.glide:glide:3.5.2'
+//    compile 'com.github.bumptech.glide:okhttp-integration:1.2.2'
 }

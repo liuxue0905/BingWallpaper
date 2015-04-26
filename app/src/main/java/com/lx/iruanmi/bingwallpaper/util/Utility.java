@@ -1,13 +1,16 @@
 package com.lx.iruanmi.bingwallpaper.util;
 
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.support.v4.content.IntentCompat;
 import android.util.Log;
 
+import com.lx.iruanmi.bingwallpaper.BingActivity;
 import com.lx.iruanmi.bingwallpaper.R;
 
 import org.joda.time.DateTime;
@@ -194,4 +197,11 @@ public class Utility {
         return dateTimeZHCN;
     }
 
+    public static void actionDoudouBlog(Context context) {
+        String url = "http://www.iruanmi.com/bing-wallpaper/";
+        Intent intent = new Intent();
+        intent.setAction(android.content.Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(url));
+        context.startActivity(intent);
+    }
 }

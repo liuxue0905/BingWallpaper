@@ -7,12 +7,17 @@ import android.widget.FrameLayout;
 import com.lx.iruanmi.bingwallpaper.R;
 import com.lx.iruanmi.bingwallpaper.db.Bing;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 /**
  * TODO: document your custom view class.
  */
 public class BingHpBottomCellView extends FrameLayout {
 
+    @InjectView(R.id.viewBingMusCardContentView)
     public BingMusCardView viewBingMusCardContentView;
+    @InjectView(R.id.viewBingHpCtrlsView)
     public BingHpCtrlsView viewBingHpCtrlsView;
 
     public BingHpBottomCellView(Context context) {
@@ -32,14 +37,7 @@ public class BingHpBottomCellView extends FrameLayout {
 
     private void init(AttributeSet attrs, int defStyle) {
         inflate(getContext(), R.layout.view_hp_bottom_cell, this);
-    }
-
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-
-        viewBingMusCardContentView = (BingMusCardView) findViewById(R.id.viewBingMusCardContentView);
-        viewBingHpCtrlsView = (BingHpCtrlsView) findViewById(R.id.viewBingHpCtrlsView);
+        ButterKnife.inject(this);
     }
 
     public void bind(String date, Bing bing) {

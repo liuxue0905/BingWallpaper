@@ -45,6 +45,8 @@ import org.joda.time.format.DateTimeFormat;
 
 import java.util.HashMap;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import uk.co.senab.photoview.PhotoView;
 
 
@@ -108,13 +110,22 @@ public class BingFragment extends Fragment {
     // parameters
     private String mCountry;
     private String mDate;
-    private PhotoView viewPhotoView;
-    private View layoutProgress;
-    private ProgressBar pb;
-    private Button btnRefresh;
-    private TextView tvInfo;
-    private TextView tvProgress;
-    private BingHpBottomCellView viewBingHpBottomCellView;
+
+    @InjectView(R.id.viewPhotoView)
+    PhotoView viewPhotoView;
+    @InjectView(R.id.layoutProgress)
+    View layoutProgress;
+    @InjectView(R.id.pb)
+    ProgressBar pb;
+    @InjectView(R.id.btnRefresh)
+    Button btnRefresh;
+    @InjectView(R.id.tvInfo)
+    TextView tvInfo;
+    @InjectView(R.id.tvProgress)
+    TextView tvProgress;
+    @InjectView(R.id.viewBingHpBottomCellView)
+    BingHpBottomCellView viewBingHpBottomCellView;
+
     private OnBingFragmentInteractionListener mListener;
     /**
      * The instance of the {@link SystemUiHider} for this activity.
@@ -194,60 +205,54 @@ public class BingFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        viewPhotoView = (PhotoView) view.findViewById(R.id.viewPhotoView);
-        layoutProgress = view.findViewById(R.id.layoutProgress);
-        pb = (ProgressBar) view.findViewById(R.id.pb);
-        btnRefresh = (Button) view.findViewById(R.id.btnRefresh);
-        tvInfo = (TextView) view.findViewById(R.id.tvInfo);
-        tvProgress = (TextView) view.findViewById(R.id.tvProgress);
-        viewBingHpBottomCellView = (BingHpBottomCellView) view.findViewById(R.id.viewBingHpBottomCellView);
+        ButterKnife.inject(this, view);
 
         mSystemUiHider
                 .setOnVisibilityChangeListener(new SystemUiHider.OnVisibilityChangeListener() {
-                    // Cached values.
-                    int mControlsHeight;
-                    int mShortAnimTime;
+            // Cached values.
+            int mControlsHeight;
+            int mShortAnimTime;
 
-                    @Override
-                    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-                    public void onVisibilityChange(boolean visible) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-                            // If the ViewPropertyAnimator API is available
-                            // (Honeycomb MR2 and later), use it to animate the
-                            // in-layout UI controls at the bottom of the
-                            // screen.
-                            if (mControlsHeight == 0) {
-                                mControlsHeight = viewBingHpBottomCellView.getHeight();
-                            }
-                            if (mShortAnimTime == 0) {
-                                mShortAnimTime = getResources().getInteger(
-                                        android.R.integer.config_shortAnimTime);
-                            }
-                            viewBingHpBottomCellView.viewBingMusCardContentView.animate()
-                                    .translationY(visible ? 0 : mControlsHeight)
-                                    .setDuration(mShortAnimTime);
-                        } else {
-                            // If the ViewPropertyAnimator APIs aren't
-                            // available, simply show or hide the in-layout UI
-                            // controls.
-                            viewBingHpBottomCellView.viewBingMusCardContentView.setVisibility(visible ? View.VISIBLE : View.GONE);
-                        }
-
-                        if (visible) {
-                            ((ActionBarActivity) getActivity()).getSupportActionBar().show();
-                        } else {
-                            ((ActionBarActivity) getActivity()).getSupportActionBar().hide();
-                        }
-                        viewBingHpBottomCellView.viewBingHpCtrlsView.cbHpcFullSmall.setChecked(!visible);
-
-                        mListener.onBingFragmentSystemUiVisibilityChange(visible);
-
-                        if (visible && AUTO_HIDE) {
-                            // Schedule a hide().
-//                            delayedHide(AUTO_HIDE_DELAY_MILLIS);
-                        }
+            @Override
+            @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+            public void onVisibilityChange(boolean visible) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+                    // If the ViewPropertyAnimator API is available
+                    // (Honeycomb MR2 and later), use it to animate the
+                    // in-layout UI controls at the bottom of the
+                    // screen.
+                    if (mControlsHeight == 0) {
+                        mControlsHeight = viewBingHpBottomCellView.getHeight();
                     }
-                });
+                    if (mShortAnimTime == 0) {
+                        mShortAnimTime = getResources().getInteger(
+                                android.R.integer.config_shortAnimTime);
+                    }
+                    viewBingHpBottomCellView.viewBingMusCardContentView.animate()
+                            .translationY(visible ? 0 : mControlsHeight)
+                            .setDuration(mShortAnimTime);
+                } else {
+                    // If the ViewPropertyAnimator APIs aren't
+                    // available, simply show or hide the in-layout UI
+                    // controls.
+                    viewBingHpBottomCellView.viewBingMusCardContentView.setVisibility(visible ? View.VISIBLE : View.GONE);
+                }
+
+                if (visible) {
+                    ((ActionBarActivity) getActivity()).getSupportActionBar().show();
+                } else {
+                    ((ActionBarActivity) getActivity()).getSupportActionBar().hide();
+                }
+                viewBingHpBottomCellView.viewBingHpCtrlsView.cbHpcFullSmall.setChecked(!visible);
+
+                mListener.onBingFragmentSystemUiVisibilityChange(visible);
+
+                if (visible && AUTO_HIDE) {
+                    // Schedule a hide().
+//                            delayedHide(AUTO_HIDE_DELAY_MILLIS);
+                }
+            }
+        });
         mSystemUiHider.show();
 
         viewBingHpBottomCellView.viewBingHpCtrlsView.cbHpcLandscapePortrait.setOnCheckedChangeListener(new ToggleButton.OnCheckedChangeListener() {
@@ -378,7 +383,7 @@ public class BingFragment extends Fragment {
 //                .considerExifParams(true)
                 .build();
 
-        String bingpix = viewBingHpBottomCellView.viewBingHpCtrlsView.cbHpcLandscapePortrait.isChecked() ? getString(R.string.bing_9x15) : getString(R.string.bing_15x9);
+        String bingpix = viewBingHpBottomCellView.viewBingHpCtrlsView.cbHpcLandscapePortrait.isChecked() ? bing.bing_9x16 : bing.bing_16x9;
         final String url = getString(R.string.bing_url_formate, getString(R.string.bing_host), bing.getBing_picname(), bingpix);
         Log.d(TAG, "url:" + url);
         final String subPath = url.substring(url.lastIndexOf('/'));
