@@ -3,11 +3,13 @@ package com.lx.iruanmi.bingwallpaper;
 import android.app.Application;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.lx.iruanmi.bingwallpaper.db.BingDao;
 import com.lx.iruanmi.bingwallpaper.db.DaoMaster;
 import com.lx.iruanmi.bingwallpaper.db.DaoSession;
 import com.lx.iruanmi.bingwallpaper.util.OkHttpImageDownloader;
+import com.lx.iruanmi.bingwallpaper.util.Utility;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -20,6 +22,8 @@ import com.umeng.update.UpdateConfig;
  * Created by liuxue on 2015/3/15.
  */
 public class BingWallpaperApplication extends Application {
+
+    private static final String TAG = "BingWallpaperApplication";
 
     private static BingWallpaperApplication ourInstance = null;
     private SQLiteDatabase db;
@@ -40,6 +44,8 @@ public class BingWallpaperApplication extends Application {
 //        UpdateConfig.setDebug(true);
 //        MobclickAgent.setDebugMode(true);
         MobclickAgent.openActivityDurationTrack(false);
+
+//        Log.d(TAG, "DeviceInfo:" + Utility.getDeviceInfo(this));
 
         initImageLoader(getApplicationContext());
 

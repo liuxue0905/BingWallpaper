@@ -7,17 +7,17 @@
     <!-- Customize your theme here. -->
     <!--</style>-->
 
-    <style name="AppTheme.Base" parent="Theme.AppCompat">
+    <style name="AppTheme.Base" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDarkS">@color/colorPrimaryDarkS1</item>
 
         <!--<item name="android:colorAccent">?attr/colorAccent</item>-->
         <!--<item name="android:colorControlNormal">?attr/colorControlNormal</item>-->
         <!--<item name="android:colorControlActivated">?attr/colorControlActivated</item>-->
         <!--<item name="android:colorControlHighlight">?attr/colorControlHighlight</item>-->
 
-        <item name="android:windowNoTitle">true</item>
-        <item name="windowActionBar">false</item>
+        <!--<item name="android:windowNoTitle">true</item>-->
+        <!--<item name="windowActionBar">false</item>-->
 
 
     </style>

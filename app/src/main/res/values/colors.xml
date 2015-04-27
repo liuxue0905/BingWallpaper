@@ -5,7 +5,7 @@
     <eat-comment />
     <color name="windowBackground">#666</color>
     <color name="colorPrimary">#FF8C00</color>
-    <color name="colorPrimaryDark">#99000000</color>
+    <color name="colorPrimaryDarkS1">#99000000</color>
 
     <eat-comment />
     <color name="navt_background_normal">#2B2B2B</color>

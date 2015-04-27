@@ -45,6 +45,7 @@ public class BingActivity extends ActionBarActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
+            toolbar.setNavigationIcon(R.drawable.ic_drawer);
             setSupportActionBar(toolbar);
         }
 
