@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="AppTheme">
-        <attr name="colorPrimaryDarkS" format="color" />
+        <!--<attr name="colorPrimaryDarkS" format="color" />-->
     </declare-styleable>
 </resources>

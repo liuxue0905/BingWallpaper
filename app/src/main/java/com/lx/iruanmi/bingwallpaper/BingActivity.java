@@ -11,16 +11,19 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.lx.iruanmi.bingwallpaper.otto.BingFragmentSystemUiVisibilityChangeEvent;
+import com.lx.iruanmi.bingwallpaper.otto.BusProvider;
+import com.lx.iruanmi.bingwallpaper.otto.DateEvent;
 import com.lx.iruanmi.bingwallpaper.util.Utility;
 import com.lx.iruanmi.bingwallpaper.widget.HackyDrawerLayout;
+import com.squareup.otto.Subscribe;
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.update.UmengUpdateAgent;
 import com.umeng.update.UmengUpdateListener;
 import com.umeng.update.UpdateResponse;
 import com.umeng.update.UpdateStatus;
 
-public class BingActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, BingFragment.OnBingFragmentInteractionListener {
+public class BingActivity extends ActionBarActivity {
 
     private static final String TAG = "BingActivity";
 
@@ -45,7 +48,7 @@ public class BingActivity extends ActionBarActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
-            toolbar.setNavigationIcon(R.drawable.ic_drawer);
+//            toolbar.setNavigationIcon(R.drawable.ic_drawer);
             setSupportActionBar(toolbar);
         }
 
@@ -65,15 +68,18 @@ public class BingActivity extends ActionBarActivity
     protected void onResume() {
         super.onResume();
         MobclickAgent.onResume(this);       //统计时长
+
+        BusProvider.getInstance().register(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         MobclickAgent.onPause(this);
+
+        BusProvider.getInstance().unregister(this);
     }
 
-    @Override
     public void onNavigationDrawerItemSelected(String date, String country) {
         Log.d(TAG, String.format("onNavigationDrawerItemSelected() date:%s country:%s", date, country));
 
@@ -166,13 +172,16 @@ public class BingActivity extends ActionBarActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onBingFragmentDateChanged(String date, String country) {
-        mNavigationDrawerFragment.setBingFragmentParams(date, country);
+    @Subscribe
+    public void onEventDateEvent(DateEvent event) {
+        Log.d(TAG, "onEventDateEvent()");
+//        mNavigationDrawerFragment.setBingFragmentParams(event.ymd, event.c);
+        onNavigationDrawerItemSelected(event.ymd, event.c);
     }
 
-    @Override
-    public void onBingFragmentSystemUiVisibilityChange(boolean visible) {
-        ((HackyDrawerLayout) findViewById(R.id.drawer_layout)).setLocked(!visible);
+    @Subscribe
+    public void onEventBingFragmentSystemUiVisibilityChangeEvent(BingFragmentSystemUiVisibilityChangeEvent event) {
+        Log.d(TAG, "onEventBingFragmentSystemUiVisibilityChangeEvent()");
+        ((HackyDrawerLayout) findViewById(R.id.drawer_layout)).setLocked(!event.visible);
     }
 }

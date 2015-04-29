@@ -28,6 +28,9 @@ import android.widget.ToggleButton;
 
 import com.lx.iruanmi.bingwallpaper.db.Bing;
 import com.lx.iruanmi.bingwallpaper.db.DBUtil;
+import com.lx.iruanmi.bingwallpaper.otto.BingFragmentSystemUiVisibilityChangeEvent;
+import com.lx.iruanmi.bingwallpaper.otto.BusProvider;
+import com.lx.iruanmi.bingwallpaper.otto.DateEvent;
 import com.lx.iruanmi.bingwallpaper.util.MobclickAgentHelper;
 import com.lx.iruanmi.bingwallpaper.util.SystemUiHider;
 import com.lx.iruanmi.bingwallpaper.util.Utility;
@@ -37,6 +40,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+import com.squareup.otto.Subscribe;
 import com.umeng.analytics.MobclickAgent;
 
 import org.joda.time.DateTime;
@@ -53,8 +57,6 @@ import uk.co.senab.photoview.PhotoView;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link com.lx.iruanmi.bingwallpaper.BingFragment.OnBingFragmentInteractionListener} interface
- * to handle interaction events.
  * Use the {@link BingFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
@@ -126,7 +128,7 @@ public class BingFragment extends Fragment {
     @InjectView(R.id.viewBingHpBottomCellView)
     BingHpBottomCellView viewBingHpBottomCellView;
 
-    private OnBingFragmentInteractionListener mListener;
+//    private OnBingFragmentInteractionListener mListener;
     /**
      * The instance of the {@link SystemUiHider} for this activity.
      */
@@ -177,13 +179,19 @@ public class BingFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
         MobclickAgent.onPageStart(TAG); //统计页面
+
+        BusProvider.getInstance().register(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
+
         MobclickAgent.onPageEnd(TAG);
+
+        BusProvider.getInstance().unregister(this);
     }
 
     @Override
@@ -245,7 +253,8 @@ public class BingFragment extends Fragment {
                 }
                 viewBingHpBottomCellView.viewBingHpCtrlsView.cbHpcFullSmall.setChecked(!visible);
 
-                mListener.onBingFragmentSystemUiVisibilityChange(visible);
+//                mListener.onBingFragmentSystemUiVisibilityChange(visible);
+                BusProvider.getInstance().post(new BingFragmentSystemUiVisibilityChangeEvent(visible));
 
                 if (visible && AUTO_HIDE) {
                     // Schedule a hide().
@@ -296,7 +305,8 @@ public class BingFragment extends Fragment {
                 Log.d(TAG, "dateTime:" + dateTime);
                 dateTime = dateTime.minusDays(1);
                 Log.d(TAG, "dateTime:" + dateTime);
-                mListener.onBingFragmentDateChanged(dateTime.toString(getString(R.string.bing_date_formate)), mCountry);
+//                mListener.onBingFragmentDateChanged(dateTime.toString(getString(R.string.bing_date_formate)), mCountry);
+                BusProvider.getInstance().post(new DateEvent(dateTime.toString(getString(R.string.bing_date_formate)), mCountry));
 
                 MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_BING_BTN_PREVIOUS);
             }
@@ -310,7 +320,8 @@ public class BingFragment extends Fragment {
                 Log.d(TAG, "dateTime:" + dateTime);
                 dateTime = dateTime.plusDays(1);
                 Log.d(TAG, "dateTime:" + dateTime);
-                mListener.onBingFragmentDateChanged(dateTime.toString(getString(R.string.bing_date_formate)), mCountry);
+//                mListener.onBingFragmentDateChanged(dateTime.toString(getString(R.string.bing_date_formate)), mCountry);
+                BusProvider.getInstance().post(new DateEvent(dateTime.toString(getString(R.string.bing_date_formate)), mCountry));
 
                 MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_BING_BTN_NEXT);
             }
@@ -338,19 +349,6 @@ public class BingFragment extends Fragment {
         String date = getArguments().getString(ARG_DATE);
         Log.d(TAG, String.format("onAttach() date:%s country:%s", date, country));
         ((BingActivity) activity).onSectionAttached(date, country);
-
-        try {
-            mListener = (OnBingFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnBingFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
     }
 
     /**
@@ -481,22 +479,22 @@ public class BingFragment extends Fragment {
     }
 
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnBingFragmentInteractionListener {
-        //        public void onBingFragmentInteraction(Uri uri);
-        public void onBingFragmentDateChanged(String date, String country);
-
-        public void onBingFragmentSystemUiVisibilityChange(boolean visible);
-    }
+//    /**
+//     * This interface must be implemented by activities that contain this
+//     * fragment to allow an interaction in this fragment to be communicated
+//     * to the activity and potentially other fragments contained in that
+//     * activity.
+//     * <p/>
+//     * See the Android Training lesson <a href=
+//     * "http://developer.android.com/training/basics/fragments/communicating.html"
+//     * >Communicating with Other Fragments</a> for more information.
+//     */
+//    public interface OnBingFragmentInteractionListener {
+//        //        public void onBingFragmentInteraction(Uri uri);
+//        public void onBingFragmentDateChanged(String date, String country);
+//
+//        public void onBingFragmentSystemUiVisibilityChange(boolean visible);
+//    }
 
     private class GetBingTask extends AsyncTask<Void, Void, Bing> {
 
@@ -615,4 +613,8 @@ public class BingFragment extends Fragment {
         }
     }
 
+    @Subscribe
+    public void onEventDateEvent(DateEvent event) {
+        Log.d(TAG, "onEventDateEvent()");
+    }
 }

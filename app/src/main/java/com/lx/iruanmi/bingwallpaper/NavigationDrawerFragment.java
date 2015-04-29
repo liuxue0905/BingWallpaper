@@ -6,7 +6,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -26,8 +26,12 @@ import android.widget.CalendarView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.lx.iruanmi.bingwallpaper.otto.BusProvider;
+import com.lx.iruanmi.bingwallpaper.otto.DateEvent;
 import com.lx.iruanmi.bingwallpaper.util.MobclickAgentHelper;
 import com.lx.iruanmi.bingwallpaper.util.Utility;
+import com.squareup.otto.Produce;
+import com.squareup.otto.Subscribe;
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.update.UmengUpdateAgent;
 
@@ -59,10 +63,10 @@ public class NavigationDrawerFragment extends Fragment {
      */
     private static final String PREF_USER_LEARNED_DRAWER = "navigation_drawer_learned";
 
-    /**
-     * A pointer to the current callbacks instance (the Activity).
-     */
-    private NavigationDrawerCallbacks mCallbacks;
+//    /**
+//     * A pointer to the current callbacks instance (the Activity).
+//     */
+//    private NavigationDrawerCallbacks mCallbacks;
 
     /**
      * Helper component that ties the action bar to the navigation drawer.
@@ -86,6 +90,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
 
         // Read in the flag indicating whether or not the user has demonstrated awareness of the
@@ -109,6 +114,8 @@ public class NavigationDrawerFragment extends Fragment {
         super.onResume();
         MobclickAgent.onPageStart(TAG); //统计页面
 
+        BusProvider.getInstance().register(this);
+
         if (!isAdded()) {
             return;
         }
@@ -120,6 +127,8 @@ public class NavigationDrawerFragment extends Fragment {
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd(TAG);
+
+        BusProvider.getInstance().unregister(this);
     }
 
     @Override
@@ -212,7 +221,7 @@ public class NavigationDrawerFragment extends Fragment {
 
         updateWidgets();
 
-        selectItem();
+        BusProvider.getInstance().post(new DateEvent(mCurrentSelectedDate, mCurrentSelectedCountry));
     }
 
     public boolean isDrawerOpen() {
@@ -242,7 +251,7 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerToggle = new ActionBarDrawerToggle(
                 getActivity(),                    /* host Activity */
                 mDrawerLayout,                    /* DrawerLayout object */
-                R.drawable.ic_drawer,             /* nav drawer image to replace 'Up' caret */
+                /*R.drawable.ic_drawer,*/             /* nav drawer image to replace 'Up' caret */
                 R.string.navigation_drawer_open,  /* "open drawer" description for accessibility */
                 R.string.navigation_drawer_close  /* "close drawer" description for accessibility */
         ) {
@@ -257,7 +266,7 @@ public class NavigationDrawerFragment extends Fragment {
 
                 getActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
 
-                selectItem();
+                BusProvider.getInstance().post(new DateEvent(mCurrentSelectedDate, mCurrentSelectedCountry));
             }
 
             @Override
@@ -300,44 +309,9 @@ public class NavigationDrawerFragment extends Fragment {
 
     }
 
-    //    private void selectItem(int positionC, int year, int monthOfYear, int dayOfMonth, int positionBing) {
-    private void selectItem() {
-//        mCurrentSelectedPosition = position;
-//        if (mDrawerListView != null) {
-//            mDrawerListView.setItemChecked(position, true);
-//        }
-//        if (mDrawerLayout != null) {
-//            mDrawerLayout.closeDrawer(mFragmentContainerView);
-//        }
-
-        if (mCallbacks != null) {
-            mCallbacks.onNavigationDrawerItemSelected(mCurrentSelectedDate, mCurrentSelectedCountry);
-        }
-    }
-
     private String getCountry(int position) {
         String[] cArray = getResources().getStringArray(R.array.c);
         return cArray[position];
-    }
-
-    private String getCurrentCountry() {
-        return getCountry(spinnerC.getSelectedItemPosition());
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mCallbacks = (NavigationDrawerCallbacks) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException("Activity must implement NavigationDrawerCallbacks.");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mCallbacks = null;
     }
 
     @Override
@@ -422,22 +396,26 @@ public class NavigationDrawerFragment extends Fragment {
         return DateTime.now().getMillis();
     }
 
-    public void setBingFragmentParams(String date, String country) {
-        mCurrentSelectedDate = date;
-        mCurrentSelectedCountry = country;
+//    private void setBingFragmentParams(String date, String country) {
+//        mCurrentSelectedDate = date;
+//        mCurrentSelectedCountry = country;
+//
+//        updateWidgets();
+//
+//        selectItem();
+//    }
 
-        updateWidgets();
-
-        selectItem();
+    @Produce
+    public DateEvent produceDateEvent() {
+        Log.d(TAG, "produceDateEvent()");
+        return new DateEvent(mCurrentSelectedDate, mCurrentSelectedCountry);
     }
 
-    /**
-     * Callbacks interface that all activities using this fragment must implement.
-     */
-    public static interface NavigationDrawerCallbacks {
-        /**
-         * Called when an item in the navigation drawer is selected.
-         */
-        void onNavigationDrawerItemSelected(String date, String country);
+    @Subscribe
+    public void onEventDateEvent(DateEvent event) {
+        mCurrentSelectedDate = event.ymd;
+        mCurrentSelectedCountry = event.c;
+
+        updateWidgets();
     }
 }

@@ -21,7 +21,7 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:orientation="vertical"
-        android:background="?attr/colorPrimaryDarkS">
+        android:background="?attr/colorPrimaryDark">
 
         <ProgressBar
             android:id="@+id/pb"

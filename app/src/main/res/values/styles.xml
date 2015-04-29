@@ -17,7 +17,7 @@
     <style name="Widget.Style1.NavigationDrawer"></style>
 
     <style name="Widget.Style1.NavigationDrawer.Section">
-        <item name="android:background">?attr/colorPrimaryDarkS</item>
+        <item name="android:background">?attr/colorPrimaryDark</item>
         <item name="android:paddingTop">6dp</item>
         <item name="android:paddingBottom">6dp</item>
         <item name="android:paddingLeft">6dp</item>
