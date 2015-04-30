@@ -303,8 +303,9 @@ public class BingFragment extends Fragment {
                 Log.d(TAG, "dateTime:" + dateTime);
                 dateTime = dateTime.minusDays(1);
                 Log.d(TAG, "dateTime:" + dateTime);
-//                mListener.onBingFragmentDateChanged(dateTime.toString(getString(R.string.bing_date_formate)), mCountry);
                 BusProvider.getInstance().post(new DateEvent(dateTime.toString(getString(R.string.bing_date_formate)), mCountry));
+
+                viewViewPager.setCurrentItem(viewViewPager.getCurrentItem() - 1, true);
 
                 MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_BING_BTN_PREVIOUS);
             }
@@ -318,8 +319,9 @@ public class BingFragment extends Fragment {
                 Log.d(TAG, "dateTime:" + dateTime);
                 dateTime = dateTime.plusDays(1);
                 Log.d(TAG, "dateTime:" + dateTime);
-//                mListener.onBingFragmentDateChanged(dateTime.toString(getString(R.string.bing_date_formate)), mCountry);
                 BusProvider.getInstance().post(new DateEvent(dateTime.toString(getString(R.string.bing_date_formate)), mCountry));
+
+                viewViewPager.setCurrentItem(viewViewPager.getCurrentItem() + 1, true);
 
                 MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_BING_BTN_NEXT);
             }
@@ -348,15 +350,15 @@ public class BingFragment extends Fragment {
         mGetBingTask.execute();
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        String country = getArguments().getString(ARG_COUNTRY);
-        String date = getArguments().getString(ARG_DATE);
-        Log.d(TAG, String.format("onAttach() date:%s country:%s", date, country));
-        ((BingActivity) activity).onSectionAttached(date, country);
-    }
+//    @Override
+//    public void onAttach(Activity activity) {
+//        super.onAttach(activity);
+//
+//        String country = getArguments().getString(ARG_COUNTRY);
+//        String date = getArguments().getString(ARG_DATE);
+//        Log.d(TAG, String.format("onAttach() date:%s country:%s", date, country));
+//        ((BingActivity) activity).onSectionAttached(date, country);
+//    }
 
     /**
      * Schedules a call to hide() in [delay] milliseconds, canceling any
@@ -586,5 +588,8 @@ public class BingFragment extends Fragment {
     @Subscribe
     public void onEventDateEvent(DateEvent event) {
         Log.d(TAG, "onEventDateEvent()");
+        mDate = event.ymd;
+        mCountry = event.c;
+        getBing();
     }
 }

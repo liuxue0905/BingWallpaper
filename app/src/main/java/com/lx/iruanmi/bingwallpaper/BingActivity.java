@@ -23,6 +23,11 @@ import com.umeng.update.UmengUpdateListener;
 import com.umeng.update.UpdateResponse;
 import com.umeng.update.UpdateStatus;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnPageChange;
+import uk.co.senab.photoview.sample.HackyViewPager;
+
 public class BingActivity extends ActionBarActivity {
 
     private static final String TAG = "BingActivity";
@@ -46,6 +51,8 @@ public class BingActivity extends ActionBarActivity {
 
         mContext = this;
 
+        ButterKnife.inject(this);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
 //            toolbar.setNavigationIcon(R.drawable.ic_drawer);
@@ -62,6 +69,11 @@ public class BingActivity extends ActionBarActivity {
                 (HackyDrawerLayout) findViewById(R.id.drawer_layout));
 
 //        ((DrawerLayout) findViewById(R.id.drawer_layout)).setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, new BingFragment())
+                .commit();
     }
 
     @Override
@@ -175,8 +187,9 @@ public class BingActivity extends ActionBarActivity {
     @Subscribe
     public void onEventDateEvent(DateEvent event) {
         Log.d(TAG, "onEventDateEvent()");
+        onSectionAttached(event.ymd, event.c);
 //        mNavigationDrawerFragment.setBingFragmentParams(event.ymd, event.c);
-        onNavigationDrawerItemSelected(event.ymd, event.c);
+//        onNavigationDrawerItemSelected(event.ymd, event.c);
     }
 
     @Subscribe
@@ -184,4 +197,5 @@ public class BingActivity extends ActionBarActivity {
         Log.d(TAG, "onEventBingFragmentSystemUiVisibilityChangeEvent()");
         ((HackyDrawerLayout) findViewById(R.id.drawer_layout)).setLocked(!event.visible);
     }
+
 }

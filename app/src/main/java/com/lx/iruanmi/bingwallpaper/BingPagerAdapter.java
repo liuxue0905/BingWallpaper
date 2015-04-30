@@ -1,5 +1,6 @@
 package com.lx.iruanmi.bingwallpaper;
 
+import android.graphics.Color;
 import android.support.v4.view.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,8 @@ public class BingPagerAdapter extends PagerAdapter {
 
         // Now just add PhotoView to ViewPager and return it
         container.addView(photoView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+
+//        photoView.setBackgroundColor(Color.parseColor("#00ffff"));
 
         return photoView;
     }

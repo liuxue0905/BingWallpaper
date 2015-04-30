@@ -18,7 +18,7 @@ import android.widget.DatePicker;
  * create an instance of this fragment.
  */
 public class DateWidgetFragment extends DialogFragment {
-    // TODO: Rename parameter arguments, choose names that match
+
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_YEAR = "year";
     private static final String ARG_MONTH_OF_YEAR = "monthOfYear";
@@ -62,7 +62,6 @@ public class DateWidgetFragment extends DialogFragment {
      * @param dayOfMonth  Parameter 2.
      * @return A new instance of fragment DateWidgetFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static DateWidgetFragment newInstance(int year, int monthOfYear, int dayOfMonth, long minDate, long maxDate) {
         DateWidgetFragment fragment = new DateWidgetFragment();
         Bundle args = new Bundle();
@@ -129,7 +128,6 @@ public class DateWidgetFragment extends DialogFragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnDateWidgetFragmentInteractionListener {
-        // TODO: Update argument type and name
         public void onDateWidgetFragmentInteraction(int year, int monthOfYear, int dayOfMonth);
     }
 }
