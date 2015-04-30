@@ -1,17 +1,14 @@
 package com.lx.iruanmi.bingwallpaper.util;
 
-import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
-import android.support.v4.content.IntentCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.lx.iruanmi.bingwallpaper.BingActivity;
 import com.lx.iruanmi.bingwallpaper.R;
 
 import org.joda.time.DateTime;
@@ -62,8 +59,14 @@ public class Utility {
         return -1;
     }
 
+    public static final int DAYS_SHOW = 62;
+
     public static long getMinDate() {
-        return DateTime.now().minusDays(64).millisOfDay().setCopy(0).getMillis();
+        return DateTime.now().minusDays(DAYS_SHOW - 1).millisOfDay().setCopy(0).getMillis();
+    }
+
+    public static long getMaxDate() {
+        return DateTime.now().getMillis();
     }
 
 //    public static long getMaxDate() {
@@ -236,7 +239,4 @@ public class Utility {
         return null;
     }
 
-    public static long getMaxDate() {
-        return DateTime.now().getMillis();
-    }
 }

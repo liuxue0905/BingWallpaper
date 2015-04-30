@@ -10,6 +10,11 @@
         android:layout_height="match_parent"
         android:scaleType="fitCenter" />
 
+    <uk.co.senab.photoview.sample.HackyViewPager
+        android:id="@+id/viewViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
     <com.lx.iruanmi.bingwallpaper.widget.BingHudView
         android:id="@+id/viewBingHudView"
         android:layout_gravity="center"

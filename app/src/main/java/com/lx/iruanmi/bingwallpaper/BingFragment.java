@@ -52,7 +52,9 @@ import java.util.HashMap;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnPageChange;
 import uk.co.senab.photoview.PhotoView;
+import uk.co.senab.photoview.sample.HackyViewPager;
 
 
 /**
@@ -120,8 +122,11 @@ public class BingFragment extends Fragment {
     BingHudView viewBingHudView;
     @InjectView(R.id.viewBingHpBottomCellView)
     BingHpBottomCellView viewBingHpBottomCellView;
+    @InjectView(R.id.viewViewPager)
+    HackyViewPager viewViewPager;
 
-//    private OnBingFragmentInteractionListener mListener;
+    BingPagerAdapter mAdapter;
+
     /**
      * The instance of the {@link SystemUiHider} for this activity.
      */
@@ -326,6 +331,15 @@ public class BingFragment extends Fragment {
                 getBing();
             }
         });
+
+        mAdapter = new BingPagerAdapter();
+        viewViewPager.setAdapter(mAdapter);
+        viewViewPager.setCurrentItem(mAdapter.getCount() - 1);
+    }
+
+    @OnPageChange(R.id.viewViewPager)
+    void onPageSelected(int position) {
+        Log.d(TAG, "onPageSelected() position:" + position);
     }
 
     private void getBing() {
