@@ -236,4 +236,7 @@ public class Utility {
         return null;
     }
 
+    public static long getMaxDate() {
+        return DateTime.now().getMillis();
+    }
 }

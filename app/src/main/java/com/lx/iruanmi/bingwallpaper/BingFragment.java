@@ -35,6 +35,7 @@ import com.lx.iruanmi.bingwallpaper.util.MobclickAgentHelper;
 import com.lx.iruanmi.bingwallpaper.util.SystemUiHider;
 import com.lx.iruanmi.bingwallpaper.util.Utility;
 import com.lx.iruanmi.bingwallpaper.widget.BingHpBottomCellView;
+import com.lx.iruanmi.bingwallpaper.widget.BingHudView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -115,16 +116,8 @@ public class BingFragment extends Fragment {
 
     @InjectView(R.id.viewPhotoView)
     PhotoView viewPhotoView;
-    @InjectView(R.id.layoutProgress)
-    View layoutProgress;
-    @InjectView(R.id.pb)
-    ProgressBar pb;
-    @InjectView(R.id.btnRefresh)
-    Button btnRefresh;
-    @InjectView(R.id.tvInfo)
-    TextView tvInfo;
-    @InjectView(R.id.tvProgress)
-    TextView tvProgress;
+    @InjectView(R.id.viewBingHudView)
+    BingHudView viewBingHudView;
     @InjectView(R.id.viewBingHpBottomCellView)
     BingHpBottomCellView viewBingHpBottomCellView;
 
@@ -327,7 +320,7 @@ public class BingFragment extends Fragment {
             }
         });
 
-        btnRefresh.setOnClickListener(new View.OnClickListener() {
+        viewBingHudView.btnRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getBing();
@@ -376,6 +369,9 @@ public class BingFragment extends Fragment {
 //                .showImageOnLoading(R.drawable.ic_stub)
 //                .showImageForEmptyUri(R.drawable.ic_empty)
 //                .showImageOnFail(R.drawable.ic_error)
+//                .showImageOnLoading(R.drawable.ic_image_loader_loading)
+//                .showImageForEmptyUri(R.drawable.ic_image_loader_fail)
+//                .showImageOnFail(R.drawable.ic_image_loader_fail)
 //                .cacheInMemory(true)
                 .cacheOnDisk(true)
 //                .considerExifParams(true)
@@ -396,23 +392,15 @@ public class BingFragment extends Fragment {
             public void onLoadingStarted(String imageUri, View view) {
                 super.onLoadingStarted(imageUri, view);
 
-                layoutProgress.setVisibility(View.VISIBLE);
-                pb.setVisibility(View.VISIBLE);
-                tvProgress.setVisibility(View.VISIBLE);
-                tvProgress.setText(null);
-                tvInfo.setVisibility(View.VISIBLE);
-                tvInfo.setText(tvInfo.getContext().getString(R.string.pic_loading));
+                viewBingHudView.onLoadingStarted(imageUri, view);
             }
 
             @Override
             public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
                 super.onLoadingFailed(imageUri, view, failReason);
 
-                layoutProgress.setVisibility(View.VISIBLE);
-                pb.setVisibility(View.GONE);
-                tvProgress.setVisibility(View.GONE);
-                tvInfo.setVisibility(View.VISIBLE);
-                tvInfo.setText(tvInfo.getContext().getString(R.string.pic_loaded_failed));
+//                viewPhotoView.setImageResource(R.drawable.ic_image_loader_fail);
+                viewBingHudView.onLoadingFailed(imageUri, view, failReason);
             }
 
             @Override
@@ -420,28 +408,23 @@ public class BingFragment extends Fragment {
                 super.onLoadingComplete(imageUri, view, loadedImage);
 
                 viewPhotoView.setImageBitmap(loadedImage);
-
-                layoutProgress.setVisibility(View.GONE);
-                pb.setVisibility(View.GONE);
-                tvProgress.setVisibility(View.GONE);
-                tvInfo.setVisibility(View.GONE);
+                viewBingHudView.onLoadingComplete(imageUri, view, loadedImage);
             }
 
             @Override
             public void onLoadingCancelled(String imageUri, View view) {
                 super.onLoadingCancelled(imageUri, view);
 
-                layoutProgress.setVisibility(View.GONE);
-                pb.setVisibility(View.GONE);
-                tvProgress.setVisibility(View.GONE);
-                tvInfo.setVisibility(View.GONE);
+//                viewPhotoView.setImageResource(R.drawable.ic_image_loader_fail);
+                viewBingHudView.onLoadingCancelled(imageUri, view);
             }
         }, new ImageLoadingProgressListener() {
             @Override
             public void onProgressUpdate(String imageUri, View view, int current, int total) {
                 Log.d(TAG, String.format("onProgressUpdate() current:%d total:%d", current, total));
                 Log.d(TAG, (int)(current * 100.0 / total) + "%");
-                tvProgress.setText((int)(current * 100.0 / total) + "%");
+
+                viewBingHudView.onProgressUpdate(imageUri, view, current, total);
             }
         });
 
@@ -478,24 +461,6 @@ public class BingFragment extends Fragment {
         });
     }
 
-
-//    /**
-//     * This interface must be implemented by activities that contain this
-//     * fragment to allow an interaction in this fragment to be communicated
-//     * to the activity and potentially other fragments contained in that
-//     * activity.
-//     * <p/>
-//     * See the Android Training lesson <a href=
-//     * "http://developer.android.com/training/basics/fragments/communicating.html"
-//     * >Communicating with Other Fragments</a> for more information.
-//     */
-//    public interface OnBingFragmentInteractionListener {
-//        //        public void onBingFragmentInteraction(Uri uri);
-//        public void onBingFragmentDateChanged(String date, String country);
-//
-//        public void onBingFragmentSystemUiVisibilityChange(boolean visible);
-//    }
-
     private class GetBingTask extends AsyncTask<Void, Void, Bing> {
 
         private String date;
@@ -509,11 +474,8 @@ public class BingFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            layoutProgress.setVisibility(View.VISIBLE);
-            pb.setVisibility(View.VISIBLE);
-            btnRefresh.setVisibility(View.GONE);
-            tvInfo.setVisibility(View.VISIBLE);
-            tvInfo.setText(getString(R.string.bing_loading));
+
+            viewBingHudView.onBingPreExecute();
         }
 
         @Override
@@ -553,9 +515,7 @@ public class BingFragment extends Fragment {
             super.onPostExecute(bing);
 
             if (isCancelled()) {
-                layoutProgress.setVisibility(View.GONE);
-                pb.setVisibility(View.INVISIBLE);
-                tvInfo.setVisibility(View.GONE);
+                viewBingHudView.onBingCancelled();
                 return;
             }
 
@@ -582,11 +542,7 @@ public class BingFragment extends Fragment {
                 return;
             }
 
-            layoutProgress.setVisibility(View.VISIBLE);
-            pb.setVisibility(View.INVISIBLE);
-            btnRefresh.setVisibility(View.VISIBLE);
-            tvInfo.setVisibility(View.VISIBLE);
-            tvInfo.setText(tvInfo.getContext().getString(R.string.bing_loaded_failed));
+            viewBingHudView.onBingException();
 
             if (e instanceof retrofit.RetrofitError) {
                 retrofit.RetrofitError re = (retrofit.RetrofitError) e;

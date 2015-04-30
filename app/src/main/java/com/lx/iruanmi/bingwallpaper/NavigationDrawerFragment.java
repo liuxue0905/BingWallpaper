@@ -1,17 +1,16 @@
 package com.lx.iruanmi.bingwallpaper;
 
-import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,7 +23,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.lx.iruanmi.bingwallpaper.otto.BusProvider;
 import com.lx.iruanmi.bingwallpaper.otto.DateEvent;
@@ -33,7 +31,6 @@ import com.lx.iruanmi.bingwallpaper.util.Utility;
 import com.squareup.otto.Produce;
 import com.squareup.otto.Subscribe;
 import com.umeng.analytics.MobclickAgent;
-import com.umeng.update.UmengUpdateAgent;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -183,7 +180,7 @@ public class NavigationDrawerFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 DateTime dateTime = DateTimeFormat.forPattern(getString(R.string.bing_date_formate)).parseDateTime(mCurrentSelectedDate);
-                DateWidgetFragment fragment = DateWidgetFragment.newInstance(dateTime.getYear(), dateTime.getMonthOfYear() - 1, dateTime.getDayOfMonth(), getMinDate(), getMaxDate());
+                DateWidgetFragment fragment = DateWidgetFragment.newInstance(dateTime.getYear(), dateTime.getMonthOfYear() - 1, dateTime.getDayOfMonth(), Utility.getMinDate(), Utility.getMaxDate());
                 fragment.setOnDateWidgetFragmentInteractionListener(new DateWidgetFragment.OnDateWidgetFragmentInteractionListener() {
 
                     @Override
@@ -378,22 +375,13 @@ public class NavigationDrawerFragment extends Fragment {
     private void updateWidgets() {
         Log.d(TAG, String.format("updateWidgets() mCurrentSelectedCountry:%s mCurrentSelectedDate:%s", mCurrentSelectedCountry, mCurrentSelectedDate));
 
-        viewCanlendarView.setMinDate(getMinDate());
-        viewCanlendarView.setMaxDate(getMaxDate());
+        viewCanlendarView.setMinDate(Utility.getMinDate());
+        viewCanlendarView.setMaxDate(Utility.getMaxDate());
 
         DateTime dateTime = DateTimeFormat.forPattern(getString(R.string.bing_date_formate)).parseDateTime(mCurrentSelectedDate);
         viewCanlendarView.setDate(dateTime.getMillis(), false, true);
 
         btnDate.setText(mCurrentSelectedDate);
-    }
-
-    private long getMinDate() {
-        return Utility.getMinDate();
-    }
-
-    private long getMaxDate() {
-//        return Utility.getMaxDate();
-        return DateTime.now().getMillis();
     }
 
 //    private void setBingFragmentParams(String date, String country) {
