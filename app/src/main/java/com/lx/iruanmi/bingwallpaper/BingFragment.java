@@ -1,12 +1,9 @@
 package com.lx.iruanmi.bingwallpaper;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -19,34 +16,25 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.lx.iruanmi.bingwallpaper.db.Bing;
-import com.lx.iruanmi.bingwallpaper.db.DBUtil;
-import com.lx.iruanmi.bingwallpaper.otto.BingEvent;
 import com.lx.iruanmi.bingwallpaper.otto.BingFragmentSystemUiVisibilityChangeEvent;
 import com.lx.iruanmi.bingwallpaper.otto.BusProvider;
-import com.lx.iruanmi.bingwallpaper.otto.DateEvent;
+import com.lx.iruanmi.bingwallpaper.otto.GetBingRequestEvent;
+import com.lx.iruanmi.bingwallpaper.otto.GetBingResponseEvent;
 import com.lx.iruanmi.bingwallpaper.util.MobclickAgentHelper;
 import com.lx.iruanmi.bingwallpaper.util.SystemUiHider;
 import com.lx.iruanmi.bingwallpaper.util.Utility;
 import com.lx.iruanmi.bingwallpaper.widget.BingHpBottomCellView;
 import com.lx.iruanmi.bingwallpaper.widget.BingHudView;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.squareup.otto.Subscribe;
 import com.umeng.analytics.MobclickAgent;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 
 import java.util.HashMap;
@@ -70,8 +58,7 @@ public class BingFragment extends Fragment {
 
     // parameter arguments
     // the fragment initialization parameters
-    private static final String ARG_COUNTRY = "country";
-    private static final String ARG_DATE = "date";
+    private static final String ARG_GET_BING_REQUEST_EVENT = "GetBingRequestEvent";
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -114,8 +101,7 @@ public class BingFragment extends Fragment {
         }
     };
     // parameters
-    private String mCountry;
-    private String mDate;
+    private GetBingRequestEvent mGetBingRequestEvent;
 
     @InjectView(R.id.viewPhotoView)
     PhotoView viewPhotoView;
@@ -142,15 +128,13 @@ public class BingFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param date    Parameter 2.
-     * @param country Parameter 1.
+     * @param event Parameter 2.
      * @return A new instance of fragment BingFragment.
      */
-    public static BingFragment newInstance(String date, String country) {
+    public static BingFragment newInstance(GetBingRequestEvent event) {
         BingFragment fragment = new BingFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_DATE, date);
-        args.putString(ARG_COUNTRY, country);
+        args.putSerializable(ARG_GET_BING_REQUEST_EVENT, event);
         fragment.setArguments(args);
         return fragment;
     }
@@ -159,8 +143,7 @@ public class BingFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mCountry = getArguments().getString(ARG_COUNTRY);
-            mDate = getArguments().getString(ARG_DATE);
+            mGetBingRequestEvent = (GetBingRequestEvent) getArguments().getSerializable(ARG_GET_BING_REQUEST_EVENT);
         }
 
         View contentView = getActivity().getWindow().getDecorView();
@@ -168,9 +151,8 @@ public class BingFragment extends Fragment {
         mSystemUiHider.setup();
         mSystemUiHider.show();
 
-        HashMap<String,String> map = new HashMap<String,String>();
-        map.put("country", mCountry);
-        map.put("date", mDate);
+        HashMap<String, String> map = new HashMap<String, String>();
+        map.put("GetBingRequestEvent", mGetBingRequestEvent != null ? mGetBingRequestEvent.toString() : null);
         MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_BING_ONCREATE, map);
     }
 
@@ -212,58 +194,58 @@ public class BingFragment extends Fragment {
 
         mSystemUiHider
                 .setOnVisibilityChangeListener(new SystemUiHider.OnVisibilityChangeListener() {
-            // Cached values.
-            int mControlsHeight;
-            int mShortAnimTime;
+                    // Cached values.
+                    int mControlsHeight;
+                    int mShortAnimTime;
 
-            @Override
-            @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-            public void onVisibilityChange(boolean visible) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-                    // If the ViewPropertyAnimator API is available
-                    // (Honeycomb MR2 and later), use it to animate the
-                    // in-layout UI controls at the bottom of the
-                    // screen.
-                    if (mControlsHeight == 0) {
-                        mControlsHeight = viewBingHpBottomCellView.getHeight();
-                    }
-                    if (mShortAnimTime == 0) {
-                        mShortAnimTime = getResources().getInteger(
-                                android.R.integer.config_shortAnimTime);
-                    }
-                    viewBingHpBottomCellView.viewBingMusCardContentView.animate()
-                            .translationY(visible ? 0 : mControlsHeight)
-                            .setDuration(mShortAnimTime);
-                } else {
-                    // If the ViewPropertyAnimator APIs aren't
-                    // available, simply show or hide the in-layout UI
-                    // controls.
-                    viewBingHpBottomCellView.viewBingMusCardContentView.setVisibility(visible ? View.VISIBLE : View.GONE);
-                }
+                    @Override
+                    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+                    public void onVisibilityChange(boolean visible) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+                            // If the ViewPropertyAnimator API is available
+                            // (Honeycomb MR2 and later), use it to animate the
+                            // in-layout UI controls at the bottom of the
+                            // screen.
+                            if (mControlsHeight == 0) {
+                                mControlsHeight = viewBingHpBottomCellView.getHeight();
+                            }
+                            if (mShortAnimTime == 0) {
+                                mShortAnimTime = getResources().getInteger(
+                                        android.R.integer.config_shortAnimTime);
+                            }
+                            viewBingHpBottomCellView.viewBingMusCardContentView.animate()
+                                    .translationY(visible ? 0 : mControlsHeight)
+                                    .setDuration(mShortAnimTime);
+                        } else {
+                            // If the ViewPropertyAnimator APIs aren't
+                            // available, simply show or hide the in-layout UI
+                            // controls.
+                            viewBingHpBottomCellView.viewBingMusCardContentView.setVisibility(visible ? View.VISIBLE : View.GONE);
+                        }
 
-                if (visible) {
-                    ((ActionBarActivity) getActivity()).getSupportActionBar().show();
-                } else {
-                    ((ActionBarActivity) getActivity()).getSupportActionBar().hide();
-                }
-                viewBingHpBottomCellView.viewBingHpCtrlsView.cbHpcFullSmall.setChecked(!visible);
+                        if (visible) {
+                            ((ActionBarActivity) getActivity()).getSupportActionBar().show();
+                        } else {
+                            ((ActionBarActivity) getActivity()).getSupportActionBar().hide();
+                        }
+                        viewBingHpBottomCellView.viewBingHpCtrlsView.cbHpcFullSmall.setChecked(!visible);
 
 //                mListener.onBingFragmentSystemUiVisibilityChange(visible);
-                BusProvider.getInstance().post(new BingFragmentSystemUiVisibilityChangeEvent(visible));
+                        BusProvider.getInstance().post(new BingFragmentSystemUiVisibilityChangeEvent(visible));
 
-                if (visible && AUTO_HIDE) {
-                    // Schedule a hide().
+                        if (visible && AUTO_HIDE) {
+                            // Schedule a hide().
 //                            delayedHide(AUTO_HIDE_DELAY_MILLIS);
-                }
-            }
-        });
+                        }
+                    }
+                });
         mSystemUiHider.show();
 
         viewBingHpBottomCellView.viewBingHpCtrlsView.cbHpcLandscapePortrait.setOnCheckedChangeListener(new ToggleButton.OnCheckedChangeListener() {
 
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                HashMap<String,String> map = new HashMap<String,String>();
+                HashMap<String, String> map = new HashMap<String, String>();
                 map.put("isChecked", String.valueOf(isChecked));
                 MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_BING_CB_LANDSCAPE_PORTRAIT, map);
             }
@@ -284,7 +266,7 @@ public class BingFragment extends Fragment {
                     }
                 }
 
-                HashMap<String,String> map = new HashMap<String,String>();
+                HashMap<String, String> map = new HashMap<String, String>();
                 map.put("isChecked", String.valueOf(isChecked));
                 MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_BING_CB_FULL_SMALL, map);
             }
@@ -294,11 +276,12 @@ public class BingFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                DateTime dateTime = DateTimeFormat.forPattern(getString(R.string.bing_date_formate)).parseDateTime(mDate);
+                DateTime dateTime = DateTimeFormat.forPattern(getString(R.string.bing_date_formate)).parseDateTime(mGetBingRequestEvent.getYmd());
                 Log.d(TAG, "dateTime:" + dateTime);
                 dateTime = dateTime.minusDays(1);
                 Log.d(TAG, "dateTime:" + dateTime);
-                BusProvider.getInstance().post(new DateEvent(dateTime.toString(getString(R.string.bing_date_formate)), mCountry));
+                mGetBingRequestEvent.setYmd(dateTime.toString(getString(R.string.bing_date_formate)));
+                BusProvider.getInstance().post(mGetBingRequestEvent);
 
                 viewViewPager.setCurrentItem(viewViewPager.getCurrentItem() - 1, true);
 
@@ -310,11 +293,12 @@ public class BingFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                DateTime dateTime = DateTimeFormat.forPattern(getString(R.string.bing_date_formate)).parseDateTime(mDate);
+                DateTime dateTime = DateTimeFormat.forPattern(getString(R.string.bing_date_formate)).parseDateTime(mGetBingRequestEvent.getYmd());
                 Log.d(TAG, "dateTime:" + dateTime);
                 dateTime = dateTime.plusDays(1);
                 Log.d(TAG, "dateTime:" + dateTime);
-                BusProvider.getInstance().post(new DateEvent(dateTime.toString(getString(R.string.bing_date_formate)), mCountry));
+                mGetBingRequestEvent.setYmd(dateTime.toString(getString(R.string.bing_date_formate)));
+                BusProvider.getInstance().post(mGetBingRequestEvent);
 
                 viewViewPager.setCurrentItem(viewViewPager.getCurrentItem() + 1, true);
 
@@ -339,6 +323,7 @@ public class BingFragment extends Fragment {
     void onPageSelected(int position) {
         Log.d(TAG, "onPageSelected() position:" + position);
 
+//        viewBingHpBottomCellView.bind("2015-05-01", null);
 //        viewBingHpBottomCellView.viewBingHpCtrlsView.btnHpcPrevious.setEnabled();
     }
 
@@ -359,17 +344,20 @@ public class BingFragment extends Fragment {
     }
 
     @Subscribe
-    public void onEventDateEvent(DateEvent event) {
-        Log.d(TAG, "onEventDateEvent()");
-        mDate = event.ymd;
-        mCountry = event.c;
+    public void onEventGetBingRequestEvent(GetBingRequestEvent event) {
+        Log.d(TAG, "onEventGetBingRequestEvent()");
+        mGetBingRequestEvent = event;
+
+        int position = Utility.getPositionMaxDate(getActivity(), event.getYmd());
+        Log.d(TAG, "onEventGetBingRequestEvent() position:" + position);
+        viewViewPager.setCurrentItem(position, true);
     }
 
     @Subscribe
-    public void onEventBingEvent(BingEvent event) {
+    public void onEventGetBingResponseEvent(GetBingResponseEvent event) {
         Log.d(TAG, "onEventBingEvent()");
 
-        viewBingHpBottomCellView.bind(event.y + '-' + event.m + '-' + event.d, event.bing);
+        viewBingHpBottomCellView.bind(event.getBingRequestEvent.getYmd(), event.bing);
 
         final Bing bing = event.bing;
 

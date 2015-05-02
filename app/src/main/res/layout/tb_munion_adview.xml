@@ -5,6 +5,7 @@
     android:layout_height="90dp"
     android:background="#fff"
     android:orientation="vertical">
+
     <View
         android:layout_width="fill_parent"
         android:layout_height="2dp"
@@ -43,13 +44,13 @@
                 android:layout_height="fill_parent"
                 android:gravity="center"
                 android:textColor="#000"
-                android:textSize="18sp"/>
+                android:textSize="18sp" />
 
             <ProgressBar
                 android:id="@+id/loading"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
-                android:layout_centerInParent="true"/>
+                android:layout_centerInParent="true" />
         </RelativeLayout>
     </FrameLayout>
 

@@ -25,7 +25,7 @@ import android.widget.CalendarView;
 import android.widget.Spinner;
 
 import com.lx.iruanmi.bingwallpaper.otto.BusProvider;
-import com.lx.iruanmi.bingwallpaper.otto.DateEvent;
+import com.lx.iruanmi.bingwallpaper.otto.GetBingRequestEvent;
 import com.lx.iruanmi.bingwallpaper.util.MobclickAgentHelper;
 import com.lx.iruanmi.bingwallpaper.util.Utility;
 import com.squareup.otto.Produce;
@@ -51,8 +51,7 @@ public class NavigationDrawerFragment extends Fragment {
 //     */
 //    private static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
 
-    private static final String STATE_SELECTED_COUNTRY = "selected_navigation_drawer_country";
-    private static final String STATE_SELECTED_DATE = "selected_navigation_drawer_date";
+    private static final String STATE_SELECTED_DATE_EVENT = "selected_navigation_drawer_date_event";
 
     /**
      * Per the design guidelines, you should show the drawer on launch until the user manually
@@ -76,8 +75,7 @@ public class NavigationDrawerFragment extends Fragment {
     private CalendarView viewCanlendarView;
     private View mFragmentContainerView;
 
-    private String mCurrentSelectedDate;
-    private String mCurrentSelectedCountry;
+    private GetBingRequestEvent mCurrentSelectedDateEvent;
 
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
@@ -96,12 +94,12 @@ public class NavigationDrawerFragment extends Fragment {
         mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
 
         if (savedInstanceState != null) {
-            mCurrentSelectedCountry = savedInstanceState.getString(STATE_SELECTED_COUNTRY);
-            mCurrentSelectedDate = savedInstanceState.getString(STATE_SELECTED_DATE);
+            mCurrentSelectedDateEvent = (GetBingRequestEvent) savedInstanceState.getSerializable(STATE_SELECTED_DATE_EVENT);
             mFromSavedInstanceState = true;
         } else {
-            mCurrentSelectedCountry = getCountry(0);
-            mCurrentSelectedDate = DateTime.now().toString(getString(R.string.bing_date_formate));
+            String ymd = DateTime.now().toString(getString(R.string.bing_date_formate));
+            String[] ymds = Utility.getYmds(ymd);
+            mCurrentSelectedDateEvent = new GetBingRequestEvent(ymds[0], ymds[1], ymds[2], getCountry(0));
         }
     }
 
@@ -161,10 +159,10 @@ public class NavigationDrawerFragment extends Fragment {
 
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mCurrentSelectedCountry = getCountry(position);
+                mCurrentSelectedDateEvent.c = getCountry(position);
 
                 HashMap<String, String> map = new HashMap<String, String>();
-                map.put("country", mCurrentSelectedCountry);
+                map.put("country", mCurrentSelectedDateEvent.c);
                 MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_NAVIGATION_DRAWER_FRAGMENT_COUNTRY, map);
 
                 updateWidgets();
@@ -179,7 +177,7 @@ public class NavigationDrawerFragment extends Fragment {
         btnDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DateTime dateTime = DateTimeFormat.forPattern(getString(R.string.bing_date_formate)).parseDateTime(mCurrentSelectedDate);
+                DateTime dateTime = DateTimeFormat.forPattern(getString(R.string.bing_date_formate)).parseDateTime(mCurrentSelectedDateEvent.getYmd());
                 DateWidgetFragment fragment = DateWidgetFragment.newInstance(dateTime.getYear(), dateTime.getMonthOfYear() - 1, dateTime.getDayOfMonth(), Utility.getMinDate(), Utility.getMaxDate());
                 fragment.setOnDateWidgetFragmentInteractionListener(new DateWidgetFragment.OnDateWidgetFragmentInteractionListener() {
 
@@ -189,7 +187,11 @@ public class NavigationDrawerFragment extends Fragment {
                             return;
                         }
 
-                        mCurrentSelectedDate = new DateTime(year, monthOfYear + 1, dayOfMonth, 0, 0).toString(getString(R.string.bing_date_formate));
+                        String ymd = new DateTime(year, monthOfYear + 1, dayOfMonth, 0, 0).toString(getString(R.string.bing_date_formate));
+                        String[] ymds = Utility.getYmds(ymd);
+                        mCurrentSelectedDateEvent.y = ymds[0];
+                        mCurrentSelectedDateEvent.m = ymds[1];
+                        mCurrentSelectedDateEvent.d = ymds[2];
 
                         MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_NAVIGATION_DRAWER_FRAGMENT_DATE_BUTTON);
 
@@ -208,7 +210,11 @@ public class NavigationDrawerFragment extends Fragment {
                     return;
                 }
 
-                mCurrentSelectedDate = new DateTime(year, month + 1, dayOfMonth, 0, 0).toString(getString(R.string.bing_date_formate));
+                String ymd = new DateTime(year, month + 1, dayOfMonth, 0, 0).toString(getString(R.string.bing_date_formate));
+                String[] ymds = Utility.getYmds(ymd);
+                mCurrentSelectedDateEvent.y = ymds[0];
+                mCurrentSelectedDateEvent.m = ymds[1];
+                mCurrentSelectedDateEvent.d = ymds[2];
 
                 MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_NAVIGATION_DRAWER_DATE_CALENDAR);
 
@@ -218,7 +224,7 @@ public class NavigationDrawerFragment extends Fragment {
 
         updateWidgets();
 
-        BusProvider.getInstance().post(new DateEvent(mCurrentSelectedDate, mCurrentSelectedCountry));
+        BusProvider.getInstance().post(mCurrentSelectedDateEvent);
     }
 
     public boolean isDrawerOpen() {
@@ -263,7 +269,7 @@ public class NavigationDrawerFragment extends Fragment {
 
                 getActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
 
-                BusProvider.getInstance().post(new DateEvent(mCurrentSelectedDate, mCurrentSelectedCountry));
+                BusProvider.getInstance().post(mCurrentSelectedDateEvent);
             }
 
             @Override
@@ -314,9 +320,7 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-//        outState.putInt(STATE_SELECTED_POSITION, mCurrentSelectedPosition);
-        outState.putString(STATE_SELECTED_COUNTRY, mCurrentSelectedCountry);
-        outState.putString(STATE_SELECTED_DATE, mCurrentSelectedDate);
+        outState.putSerializable(STATE_SELECTED_DATE_EVENT, mCurrentSelectedDateEvent);
     }
 
     @Override
@@ -373,15 +377,15 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     private void updateWidgets() {
-        Log.d(TAG, String.format("updateWidgets() mCurrentSelectedCountry:%s mCurrentSelectedDate:%s", mCurrentSelectedCountry, mCurrentSelectedDate));
+        Log.d(TAG, "updateWidgets() mCurrentSelectedDateEvent:" + mCurrentSelectedDateEvent);
 
         viewCanlendarView.setMinDate(Utility.getMinDate());
         viewCanlendarView.setMaxDate(Utility.getMaxDate());
 
-        DateTime dateTime = DateTimeFormat.forPattern(getString(R.string.bing_date_formate)).parseDateTime(mCurrentSelectedDate);
+        DateTime dateTime = DateTimeFormat.forPattern(getString(R.string.bing_date_formate)).parseDateTime(mCurrentSelectedDateEvent.getYmd());
         viewCanlendarView.setDate(dateTime.getMillis(), false, true);
 
-        btnDate.setText(mCurrentSelectedDate);
+        btnDate.setText(mCurrentSelectedDateEvent.getYmd());
     }
 
 //    private void setBingFragmentParams(String date, String country) {
@@ -394,16 +398,14 @@ public class NavigationDrawerFragment extends Fragment {
 //    }
 
     @Produce
-    public DateEvent produceDateEvent() {
+    public GetBingRequestEvent produceDateEvent() {
         Log.d(TAG, "produceDateEvent()");
-        return new DateEvent(mCurrentSelectedDate, mCurrentSelectedCountry);
+        return mCurrentSelectedDateEvent;
     }
 
     @Subscribe
-    public void onEventDateEvent(DateEvent event) {
-        mCurrentSelectedDate = event.ymd;
-        mCurrentSelectedCountry = event.c;
-
+    public void onEventDateEvent(GetBingRequestEvent event) {
+        mCurrentSelectedDateEvent = event;
         updateWidgets();
     }
 }

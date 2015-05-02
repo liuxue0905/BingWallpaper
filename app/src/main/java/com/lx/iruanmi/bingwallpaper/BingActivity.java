@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.lx.iruanmi.bingwallpaper.otto.BingFragmentSystemUiVisibilityChangeEvent;
 import com.lx.iruanmi.bingwallpaper.otto.BusProvider;
-import com.lx.iruanmi.bingwallpaper.otto.DateEvent;
+import com.lx.iruanmi.bingwallpaper.otto.GetBingRequestEvent;
 import com.lx.iruanmi.bingwallpaper.util.Utility;
 import com.lx.iruanmi.bingwallpaper.widget.HackyDrawerLayout;
 import com.squareup.otto.Subscribe;
@@ -24,9 +24,6 @@ import com.umeng.update.UpdateResponse;
 import com.umeng.update.UpdateStatus;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
-import butterknife.OnPageChange;
-import uk.co.senab.photoview.sample.HackyViewPager;
 
 public class BingActivity extends ActionBarActivity {
 
@@ -92,24 +89,24 @@ public class BingActivity extends ActionBarActivity {
         BusProvider.getInstance().unregister(this);
     }
 
-    public void onNavigationDrawerItemSelected(String date, String country) {
-        Log.d(TAG, String.format("onNavigationDrawerItemSelected() date:%s country:%s", date, country));
+    public void onNavigationDrawerItemSelected(GetBingRequestEvent event) {
+        Log.d(TAG, String.format("onNavigationDrawerItemSelected() GetBingRequestEvent:%s", event.toString()));
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.container, BingFragment.newInstance(date, country))
+                .replace(R.id.container, BingFragment.newInstance(event))
                 .commit();
     }
 
-    public void onSectionAttached(String date, String country) {
-        Log.d(TAG, String.format("onSectionAttached() date:%s country:%s", date, country));
+    public void onSectionAttached(GetBingRequestEvent event) {
+        Log.d(TAG, String.format("onSectionAttached() date:%s country:%s", event.getYmd(), event.c));
 
         String[] cArray = getResources().getStringArray(R.array.c);
         String[] cDisplayArray = getResources().getStringArray(R.array.c_display);
 
-        String cDisplay = cDisplayArray[Utility.indexOf(cArray, country)];
+        String cDisplay = cDisplayArray[Utility.indexOf(cArray, event.c)];
 
-        mTitle = getString(R.string.title_activity_bing_formate, date, cDisplay);
+        mTitle = getString(R.string.title_activity_bing_formate, event.getYmd(), cDisplay);
 
         if (getSupportActionBar() != null) {
             restoreActionBar();
@@ -146,9 +143,7 @@ public class BingActivity extends ActionBarActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
-        }
-
-        else if (id == R.id.action_update) {
+        } else if (id == R.id.action_update) {
             UmengUpdateAgent.setUpdateOnlyWifi(false);
             UmengUpdateAgent.setSlotId("65102");
             UmengUpdateAgent.forceUpdate(this);
@@ -174,9 +169,7 @@ public class BingActivity extends ActionBarActivity {
                 }
             });
             return true;
-        }
-
-        else if (id == R.id.action_doudoublog) {
+        } else if (id == R.id.action_doudoublog) {
             Utility.actionDoudouBlog(this);
             return true;
         }
@@ -185,9 +178,9 @@ public class BingActivity extends ActionBarActivity {
     }
 
     @Subscribe
-    public void onEventDateEvent(DateEvent event) {
+    public void onEventDateEvent(GetBingRequestEvent event) {
         Log.d(TAG, "onEventDateEvent()");
-        onSectionAttached(event.ymd, event.c);
+        onSectionAttached(event);
 //        mNavigationDrawerFragment.setBingFragmentParams(event.ymd, event.c);
 //        onNavigationDrawerItemSelected(event.ymd, event.c);
     }

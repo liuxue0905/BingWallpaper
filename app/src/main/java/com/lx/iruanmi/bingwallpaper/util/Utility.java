@@ -69,6 +69,11 @@ public class Utility {
         return DateTime.now().getMillis();
     }
 
+    public static int getPositionMaxDate(Context context, String ymd) {
+        DateTime dateLocal = DateTimeFormat.forPattern(context.getString(R.string.bing_date_formate)).parseDateTime(ymd);
+        return DAYS_SHOW - 1 - Days.daysBetween(dateLocal, DateTime.now()).getDays();
+    }
+
 //    public static long getMaxDate() {
 //        DateTime maxDate = DateTime.now();
 //        Log.d(TAG, "getMinDate() maxDate:" + maxDate);
@@ -166,7 +171,7 @@ public class Utility {
 
     public static boolean isBingUpdated(Context context, String date) {
         DateTime dateTimeZHCN = Utility.getDateTimeLocalToZHCN(context, date);
-        DateTime nowDateTimeZHCN = DateTime.now().toDateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone("GMT+08:00")));
+        DateTime nowDateTimeZHCN = DateTime.now().toDateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone(TIME_ZONE_ID)));
         DateTime updateDateTimeZHCN = getUpdateDateTimeZHCN();
 
         Log.d(TAG, "isBingUpdated() dateTimeZHCN:" + dateTimeZHCN);
@@ -194,7 +199,7 @@ public class Utility {
     public static DateTime getDateTimeLocalToZHCN(Context context, String date) {
         DateTime dateLocal = DateTimeFormat.forPattern(context.getString(R.string.bing_date_formate)).parseDateTime(date);
         DateTime dateTimeLocal = DateTime.now().year().setCopy(dateLocal.getYear()).monthOfYear().setCopy(dateLocal.getMonthOfYear()).dayOfMonth().setCopy(dateLocal.getDayOfMonth());
-        DateTime dateTimeZHCN = dateTimeLocal.toDateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone("GMT+08:00")));
+        DateTime dateTimeZHCN = dateTimeLocal.toDateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone(TIME_ZONE_ID)));
 
         Log.d(TAG, "dateLocal:" + dateLocal);
         Log.d(TAG, "dateTimeLocal:" + dateTimeLocal);
@@ -212,7 +217,7 @@ public class Utility {
     }
 
     public static String getDeviceInfo(Context context) {
-        try{
+        try {
             org.json.JSONObject json = new org.json.JSONObject();
             android.telephony.TelephonyManager tm = (android.telephony.TelephonyManager) context
                     .getSystemService(Context.TELEPHONY_SERVICE);
@@ -224,18 +229,18 @@ public class Utility {
             String mac = wifi.getConnectionInfo().getMacAddress();
             json.put("mac", mac);
 
-            if( TextUtils.isEmpty(device_id) ){
+            if (TextUtils.isEmpty(device_id)) {
                 device_id = mac;
             }
 
-            if( TextUtils.isEmpty(device_id) ){
-                device_id = android.provider.Settings.Secure.getString(context.getContentResolver(),android.provider.Settings.Secure.ANDROID_ID);
+            if (TextUtils.isEmpty(device_id)) {
+                device_id = android.provider.Settings.Secure.getString(context.getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
             }
 
             json.put("device_id", device_id);
 
             return json.toString();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -256,5 +261,10 @@ public class Utility {
 
     public static String getYmd(String y, String m, String d) {
         return y + '-' + m + '-' + d;
+    }
+
+    public static String[] getYmds(String ymd) {
+        String[] ymds = ymd.split("-");
+        return ymds;
     }
 }

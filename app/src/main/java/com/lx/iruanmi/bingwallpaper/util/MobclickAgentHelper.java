@@ -19,5 +19,4 @@ public class MobclickAgentHelper {
     public static final String EVENT_ID_FRAGMENT_BING_BTN_DOWN = "fragment_bing_btnDown";
 
 
-
 }

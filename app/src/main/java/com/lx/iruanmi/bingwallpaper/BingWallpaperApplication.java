@@ -3,20 +3,17 @@ package com.lx.iruanmi.bingwallpaper;
 import android.app.Application;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import com.lx.iruanmi.bingwallpaper.db.BingDao;
 import com.lx.iruanmi.bingwallpaper.db.DaoMaster;
 import com.lx.iruanmi.bingwallpaper.db.DaoSession;
 import com.lx.iruanmi.bingwallpaper.util.OkHttpImageDownloader;
-import com.lx.iruanmi.bingwallpaper.util.Utility;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.squareup.okhttp.OkHttpClient;
 import com.umeng.analytics.MobclickAgent;
-import com.umeng.update.UpdateConfig;
 
 /**
  * Created by liuxue on 2015/3/15.
