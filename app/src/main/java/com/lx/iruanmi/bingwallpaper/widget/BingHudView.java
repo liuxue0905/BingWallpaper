@@ -63,6 +63,7 @@ public class BingHudView extends FrameLayout implements ImageLoadingListener, Im
 
     @Override
     public void onLoadingStarted(String imageUri, View view) {
+        this.setVisibility(View.VISIBLE);
         layoutProgress.setVisibility(View.VISIBLE);
         pb.setVisibility(View.VISIBLE);
         tvProgress.setVisibility(View.VISIBLE);
@@ -73,6 +74,7 @@ public class BingHudView extends FrameLayout implements ImageLoadingListener, Im
 
     @Override
     public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+        this.setVisibility(View.VISIBLE);
         layoutProgress.setVisibility(View.VISIBLE);
         pb.setVisibility(View.GONE);
         tvProgress.setVisibility(View.GONE);
@@ -82,6 +84,7 @@ public class BingHudView extends FrameLayout implements ImageLoadingListener, Im
 
     @Override
     public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+        this.setVisibility(View.GONE);
         layoutProgress.setVisibility(View.GONE);
         pb.setVisibility(View.GONE);
         tvProgress.setVisibility(View.GONE);
@@ -90,6 +93,7 @@ public class BingHudView extends FrameLayout implements ImageLoadingListener, Im
 
     @Override
     public void onLoadingCancelled(String imageUri, View view) {
+        this.setVisibility(View.GONE);
         layoutProgress.setVisibility(View.GONE);
         pb.setVisibility(View.GONE);
         tvProgress.setVisibility(View.GONE);
@@ -98,10 +102,12 @@ public class BingHudView extends FrameLayout implements ImageLoadingListener, Im
 
     @Override
     public void onProgressUpdate(String imageUri, View view, int current, int total) {
+        this.setVisibility(View.VISIBLE);
         tvProgress.setText((int)(current * 100.0 / total) + "%");
     }
 
     public void onBingPreExecute() {
+        this.setVisibility(View.VISIBLE);
         layoutProgress.setVisibility(View.VISIBLE);
         pb.setVisibility(View.VISIBLE);
         btnRefresh.setVisibility(View.GONE);
@@ -110,6 +116,7 @@ public class BingHudView extends FrameLayout implements ImageLoadingListener, Im
     }
 
     public void onBingException() {
+        this.setVisibility(View.VISIBLE);
         layoutProgress.setVisibility(View.VISIBLE);
         pb.setVisibility(View.INVISIBLE);
         btnRefresh.setVisibility(View.VISIBLE);
@@ -118,6 +125,7 @@ public class BingHudView extends FrameLayout implements ImageLoadingListener, Im
     }
 
     public void onBingCancelled() {
+        this.setVisibility(View.GONE);
         layoutProgress.setVisibility(View.GONE);
         pb.setVisibility(View.INVISIBLE);
         tvInfo.setVisibility(View.GONE);

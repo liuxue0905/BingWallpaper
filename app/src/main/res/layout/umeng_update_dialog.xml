@@ -34,7 +34,7 @@
                 android:text="@string/UMUpdateTitle"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="#008bea" />
-            
+
             <Button
                 android:id="@+id/umeng_update_id_close"
 				android:layout_width="wrap_content"
@@ -45,7 +45,7 @@
 				android:focusable="true"
 				android:visibility="gone"
 				android:background="@drawable/umeng_update_button_close_bg_selector"/>
-            
+
         </RelativeLayout>
 
         <!-- split -->
@@ -78,7 +78,7 @@
                     android:textColor="#000" />
             </LinearLayout>
         </ScrollView>
-        
+
         <!-- Ignore CheckBox -->
 
 		<CheckBox

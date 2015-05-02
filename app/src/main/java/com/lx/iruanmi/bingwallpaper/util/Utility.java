@@ -183,8 +183,10 @@ public class Utility {
         return isBingUpdated;
     }
 
+    public static final String TIME_ZONE_ID = "GMT+08:00";
+
     public static DateTime getUpdateDateTimeZHCN() {
-        return DateTime.now(DateTimeZone.forTimeZone(TimeZone.getTimeZone("GMT+08:00")))
+        return DateTime.now(DateTimeZone.forTimeZone(TimeZone.getTimeZone(TIME_ZONE_ID)))
                 .millisOfDay().setCopy(0)
                 .hourOfDay().setCopy(16);
     }
@@ -239,4 +241,20 @@ public class Utility {
         return null;
     }
 
+    public static String[] positionToYmds(Context context, int position) {
+        DateTime dateTime = DateTime.now().minusDays(Utility.DAYS_SHOW - 1 - position).toDateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone(Utility.TIME_ZONE_ID)));
+        Log.d(TAG, "getItem() dateTime:" + dateTime);
+
+        String ymd = dateTime.toString(context.getString(R.string.bing_date_formate));
+        String[] ymds = ymd.split("-");
+        return ymds;
+    }
+
+//    public static int ymdToPosition(Context context, String y, String m, String d) {
+//
+//    }
+
+    public static String getYmd(String y, String m, String d) {
+        return y + '-' + m + '-' + d;
+    }
 }

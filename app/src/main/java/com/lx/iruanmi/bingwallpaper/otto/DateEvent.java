@@ -10,7 +10,6 @@ public class DateEvent {
     public final String y;
     public final String m;
     public final String d;
-
     public final String c;
 
     public DateEvent(String y, String m, String d, String c) {

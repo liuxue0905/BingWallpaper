@@ -28,6 +28,7 @@ import android.widget.ToggleButton;
 
 import com.lx.iruanmi.bingwallpaper.db.Bing;
 import com.lx.iruanmi.bingwallpaper.db.DBUtil;
+import com.lx.iruanmi.bingwallpaper.otto.BingEvent;
 import com.lx.iruanmi.bingwallpaper.otto.BingFragmentSystemUiVisibilityChangeEvent;
 import com.lx.iruanmi.bingwallpaper.otto.BusProvider;
 import com.lx.iruanmi.bingwallpaper.otto.DateEvent;
@@ -132,7 +133,6 @@ public class BingFragment extends Fragment {
      */
     private SystemUiHider mSystemUiHider;
     //    private Bing mBing;
-    private GetBingTask mGetBingTask;
 
     public BingFragment() {
         // Required empty public constructor
@@ -202,9 +202,6 @@ public class BingFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        Utility.cancelTaskInterrupt(mGetBingTask);
-        mGetBingTask = null;
     }
 
     @Override
@@ -266,15 +263,13 @@ public class BingFragment extends Fragment {
 
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                getBing();
-
                 HashMap<String,String> map = new HashMap<String,String>();
                 map.put("isChecked", String.valueOf(isChecked));
                 MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_BING_CB_LANDSCAPE_PORTRAIT, map);
             }
         });
 
-        getBing();
+//        getBing();
 
         viewBingHpBottomCellView.viewBingHpCtrlsView.cbHpcFullSmall.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -330,11 +325,12 @@ public class BingFragment extends Fragment {
         viewBingHudView.btnRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getBing();
+//                getBing();
             }
         });
 
-        mAdapter = new BingPagerAdapter();
+        viewViewPager.setOffscreenPageLimit(1);
+        mAdapter = new BingPagerAdapter(getActivity(), getFragmentManager());
         viewViewPager.setAdapter(mAdapter);
         viewViewPager.setCurrentItem(mAdapter.getCount() - 1);
     }
@@ -342,23 +338,9 @@ public class BingFragment extends Fragment {
     @OnPageChange(R.id.viewViewPager)
     void onPageSelected(int position) {
         Log.d(TAG, "onPageSelected() position:" + position);
-    }
 
-    private void getBing() {
-        Utility.cancelTaskInterrupt(mGetBingTask);
-        mGetBingTask = new GetBingTask(mDate, mCountry);
-        mGetBingTask.execute();
+//        viewBingHpBottomCellView.viewBingHpCtrlsView.btnHpcPrevious.setEnabled();
     }
-
-//    @Override
-//    public void onAttach(Activity activity) {
-//        super.onAttach(activity);
-//
-//        String country = getArguments().getString(ARG_COUNTRY);
-//        String date = getArguments().getString(ARG_DATE);
-//        Log.d(TAG, String.format("onAttach() date:%s country:%s", date, country));
-//        ((BingActivity) activity).onSectionAttached(date, country);
-//    }
 
     /**
      * Schedules a call to hide() in [delay] milliseconds, canceling any
@@ -376,73 +358,29 @@ public class BingFragment extends Fragment {
         ImageLoader.getInstance().cancelDisplayTask(viewPhotoView);
     }
 
-    private void loadBingPicture(final Bing bing) {
+    @Subscribe
+    public void onEventDateEvent(DateEvent event) {
+        Log.d(TAG, "onEventDateEvent()");
+        mDate = event.ymd;
+        mCountry = event.c;
+    }
+
+    @Subscribe
+    public void onEventBingEvent(BingEvent event) {
+        Log.d(TAG, "onEventBingEvent()");
+
+        viewBingHpBottomCellView.bind(event.y + '-' + event.m + '-' + event.d, event.bing);
+
+        final Bing bing = event.bing;
+
         if (bing == null) {
             return;
         }
-
-        DisplayImageOptions options = new DisplayImageOptions.Builder()
-//                .showImageOnLoading(R.drawable.ic_stub)
-//                .showImageForEmptyUri(R.drawable.ic_empty)
-//                .showImageOnFail(R.drawable.ic_error)
-//                .showImageOnLoading(R.drawable.ic_image_loader_loading)
-//                .showImageForEmptyUri(R.drawable.ic_image_loader_fail)
-//                .showImageOnFail(R.drawable.ic_image_loader_fail)
-//                .cacheInMemory(true)
-                .cacheOnDisk(true)
-//                .considerExifParams(true)
-                .build();
 
         String bingpix = viewBingHpBottomCellView.viewBingHpCtrlsView.cbHpcLandscapePortrait.isChecked() ? bing.bing_9x16 : bing.bing_16x9;
         final String url = getString(R.string.bing_url_formate, getString(R.string.bing_host), bing.getBing_picname(), bingpix);
         Log.d(TAG, "url:" + url);
         final String subPath = url.substring(url.lastIndexOf('/'));
-
-//        boolean has = Utility.hasExternalStoragePublicPicture(subPath);
-//        if (has) {
-//            viewBingHpBottomCellView.viewBingHpCtrlsView.btnHpcDown.setEnabled(false);
-//        }
-
-        ImageLoader.getInstance().displayImage(url, viewPhotoView, options, new SimpleImageLoadingListener() {
-            @Override
-            public void onLoadingStarted(String imageUri, View view) {
-                super.onLoadingStarted(imageUri, view);
-
-                viewBingHudView.onLoadingStarted(imageUri, view);
-            }
-
-            @Override
-            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                super.onLoadingFailed(imageUri, view, failReason);
-
-//                viewPhotoView.setImageResource(R.drawable.ic_image_loader_fail);
-                viewBingHudView.onLoadingFailed(imageUri, view, failReason);
-            }
-
-            @Override
-            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                super.onLoadingComplete(imageUri, view, loadedImage);
-
-                viewPhotoView.setImageBitmap(loadedImage);
-                viewBingHudView.onLoadingComplete(imageUri, view, loadedImage);
-            }
-
-            @Override
-            public void onLoadingCancelled(String imageUri, View view) {
-                super.onLoadingCancelled(imageUri, view);
-
-//                viewPhotoView.setImageResource(R.drawable.ic_image_loader_fail);
-                viewBingHudView.onLoadingCancelled(imageUri, view);
-            }
-        }, new ImageLoadingProgressListener() {
-            @Override
-            public void onProgressUpdate(String imageUri, View view, int current, int total) {
-                Log.d(TAG, String.format("onProgressUpdate() current:%d total:%d", current, total));
-                Log.d(TAG, (int)(current * 100.0 / total) + "%");
-
-                viewBingHudView.onProgressUpdate(imageUri, view, current, total);
-            }
-        });
 
         viewBingHpBottomCellView.viewBingHpCtrlsView.btnHpcDown.setOnClickListener(new View.OnClickListener() {
 
@@ -475,121 +413,5 @@ public class BingFragment extends Fragment {
                 manager.enqueue(request);
             }
         });
-    }
-
-    private class GetBingTask extends AsyncTask<Void, Void, Bing> {
-
-        private String date;
-        private String country;
-
-        private GetBingTask(String date, String country) {
-            this.date = date;
-            this.country = country;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            viewBingHudView.onBingPreExecute();
-        }
-
-        @Override
-        protected Bing doInBackground(Void... params) {
-            try {
-                DateTime dateTimeZHCN = Utility.getDateTimeLocalToZHCN(getActivity(), mDate);
-                String dateZHCN = dateTimeZHCN.toString(getString(R.string.bing_date_formate));
-
-                Bing bing = DBUtil.getBing(dateZHCN, country);
-                Log.d(TAG, "bing:" + bing);
-
-                if (bing == null) {
-                    String y = String.valueOf(dateTimeZHCN.getYear());
-                    String m = String.valueOf(dateTimeZHCN.getMonthOfYear());
-                    String d = String.valueOf(dateTimeZHCN.getDayOfMonth());
-
-                    INetwork network = new INetworkImpl();
-                    bing = network.adminAjax("get_bing", y, m, d, country);
-                    DBUtil.insertOrReplace(bing);
-                }
-                return bing;
-            } catch (Exception e) {
-                e.printStackTrace();
-                final Exception fe = e;
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        onPostExecute(fe);
-                    }
-                });
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Bing bing) {
-            super.onPostExecute(bing);
-
-            if (isCancelled()) {
-                viewBingHudView.onBingCancelled();
-                return;
-            }
-
-            viewBingHpBottomCellView.bind(mDate, bing);
-
-            if (bing == null) {
-//                pb.setVisibility(View.GONE);
-//                tvInfo.setVisibility(View.GONE);
-                return;
-            }
-
-            loadBingPicture(bing);
-        }
-
-//        @Override
-//        protected void onCancelled() {
-//            super.onCancelled();
-//
-//            ImageLoader.getInstance().cancelDisplayTask(viewPhotoView);
-//        }
-
-        void onPostExecute(Exception e) {
-            if (isCancelled()) {
-                return;
-            }
-
-            viewBingHudView.onBingException();
-
-            if (e instanceof retrofit.RetrofitError) {
-                retrofit.RetrofitError re = (retrofit.RetrofitError) e;
-
-                switch (re.getKind()) {
-                    case CONVERSION:
-//                        boolean isBingUpdated = Utility.isBingUpdated(getActivity(), mDate);
-//                        Log.d(TAG, "isBingUpdated:" + isBingUpdated);
-
-                        DateTime updateDateTimeZHCN = Utility.getUpdateDateTimeZHCN();
-                        DateTime updateDateTimeDefault = updateDateTimeZHCN.toDateTime(DateTimeZone.getDefault());
-
-                        Log.d(TAG, "updateDateTimeZHCN:" + updateDateTimeZHCN);
-                        Log.d(TAG, "updateDateTimeDefault:" + updateDateTimeDefault);
-
-                        String updateDateTimeString = updateDateTimeDefault.toString("HH:mm");
-                        Toast.makeText(getActivity(), getString(R.string.bing_updates_tips, updateDateTimeString), Toast.LENGTH_LONG).show();
-
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-    }
-
-    @Subscribe
-    public void onEventDateEvent(DateEvent event) {
-        Log.d(TAG, "onEventDateEvent()");
-        mDate = event.ymd;
-        mCountry = event.c;
-        getBing();
     }
 }

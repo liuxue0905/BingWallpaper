@@ -21,7 +21,7 @@ import butterknife.InjectView;
  */
 public class BingMusCardView extends LinearLayout {
 
-    private static final String TAG = "BingMusCardContentView";
+    private static final String TAG = "BingMusCardView";
 
     @InjectView(R.id.tvTitle)
     public TextView tvTitle;
@@ -53,15 +53,9 @@ public class BingMusCardView extends LinearLayout {
             return;
         }
 
-        String str = bing.bing_copyright;
-
         Pattern p = Pattern.compile("(.*)(\\(\\u00a9 .+\\))");
-        Matcher m = p.matcher(bing.getBing_copyright());
+        Matcher m = p.matcher(bing.bing_copyright);
         if (m.find()) {
-            Log.d(TAG, "m.groupCount():" + m.groupCount());
-            Log.d(TAG, "m.group(0):" + m.group(0));
-            Log.d(TAG, "m.group(1):" + m.group(1));
-            Log.d(TAG, "m.group(2):" + m.group(2));
             tvTitle.setText(m.group(1));
             tvCopyright.setText(m.group(2));
             tvTitle.setVisibility(View.VISIBLE);
