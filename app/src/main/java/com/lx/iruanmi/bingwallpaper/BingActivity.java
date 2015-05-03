@@ -2,21 +2,23 @@ package com.lx.iruanmi.bingwallpaper;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.lx.iruanmi.bingwallpaper.model.GetBingRequest;
 import com.lx.iruanmi.bingwallpaper.otto.BingFragmentSystemUiVisibilityChangeEvent;
-import com.lx.iruanmi.bingwallpaper.otto.BusProvider;
 import com.lx.iruanmi.bingwallpaper.otto.GetBingRequestEvent;
+import com.lx.iruanmi.bingwallpaper.otto.GetBingResponseEvent;
 import com.lx.iruanmi.bingwallpaper.util.Utility;
 import com.lx.iruanmi.bingwallpaper.widget.HackyDrawerLayout;
-import com.squareup.otto.Subscribe;
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.update.UmengUpdateAgent;
 import com.umeng.update.UmengUpdateListener;
@@ -24,8 +26,10 @@ import com.umeng.update.UpdateResponse;
 import com.umeng.update.UpdateStatus;
 
 import butterknife.ButterKnife;
+import de.greenrobot.event.EventBus;
 
-public class BingActivity extends ActionBarActivity {
+public class BingActivity extends AppCompatActivity
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, BingFragment.OnFragmentInteractionListener {
 
     private static final String TAG = "BingActivity";
 
@@ -66,11 +70,6 @@ public class BingActivity extends ActionBarActivity {
                 (HackyDrawerLayout) findViewById(R.id.drawer_layout));
 
 //        ((DrawerLayout) findViewById(R.id.drawer_layout)).setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, new BingFragment())
-                .commit();
     }
 
     @Override
@@ -78,7 +77,7 @@ public class BingActivity extends ActionBarActivity {
         super.onResume();
         MobclickAgent.onResume(this);       //统计时长
 
-        BusProvider.getInstance().register(this);
+//        BusProvider.getInstance().register(this);
     }
 
     @Override
@@ -86,27 +85,33 @@ public class BingActivity extends ActionBarActivity {
         super.onPause();
         MobclickAgent.onPause(this);
 
-        BusProvider.getInstance().unregister(this);
+//        BusProvider.getInstance().unregister(this);
     }
 
-    public void onNavigationDrawerItemSelected(GetBingRequestEvent event) {
-        Log.d(TAG, String.format("onNavigationDrawerItemSelected() GetBingRequestEvent:%s", event.toString()));
+    public void onNavigationDrawerItemSelected(GetBingRequest getBingRequest) {
+        Log.d(TAG, "onNavigationDrawerItemSelected() GetBingRequest:" + getBingRequest);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.container, BingFragment.newInstance(event))
+                .replace(R.id.container, BingFragment.newInstance(getBingRequest))
                 .commit();
+
+//        Fragment f = fragmentManager.findFragmentById(R.id.container);
+//        Log.d(TAG, "onNavigationDrawerItemSelected() f:" + f);
+
+//        BusProvider.getInstance().post(new GetBingRequestEvent(getBingRequest));
+        EventBus.getDefault().post(new GetBingRequestEvent(getBingRequest));
     }
 
-    public void onSectionAttached(GetBingRequestEvent event) {
-        Log.d(TAG, String.format("onSectionAttached() date:%s country:%s", event.getYmd(), event.c));
+    public void onSectionAttached(GetBingRequest getBingRequest) {
+        Log.d(TAG, "onSectionAttached() getBingRequest:" + getBingRequest);
 
         String[] cArray = getResources().getStringArray(R.array.c);
         String[] cDisplayArray = getResources().getStringArray(R.array.c_display);
 
-        String cDisplay = cDisplayArray[Utility.indexOf(cArray, event.c)];
+        String cDisplay = cDisplayArray[Utility.indexOf(cArray, getBingRequest.c)];
 
-        mTitle = getString(R.string.title_activity_bing_formate, event.getYmd(), cDisplay);
+        mTitle = getString(R.string.title_activity_bing_formate, getBingRequest.getYmd(), cDisplay);
 
         if (getSupportActionBar() != null) {
             restoreActionBar();
@@ -177,18 +182,10 @@ public class BingActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Subscribe
-    public void onEventDateEvent(GetBingRequestEvent event) {
-        Log.d(TAG, "onEventDateEvent()");
-        onSectionAttached(event);
-//        mNavigationDrawerFragment.setBingFragmentParams(event.ymd, event.c);
-//        onNavigationDrawerItemSelected(event.ymd, event.c);
-    }
-
-    @Subscribe
-    public void onEventBingFragmentSystemUiVisibilityChangeEvent(BingFragmentSystemUiVisibilityChangeEvent event) {
-        Log.d(TAG, "onEventBingFragmentSystemUiVisibilityChangeEvent()");
-        ((HackyDrawerLayout) findViewById(R.id.drawer_layout)).setLocked(!event.visible);
+    @Override
+    public void onBingFragmentSystemUiVisibilityChange(boolean visible) {
+        Log.d(TAG, "onBingFragmentSystemUiVisibilityChange() visible:" + visible);
+        ((HackyDrawerLayout) findViewById(R.id.drawer_layout)).setLocked(visible);
     }
 
 }

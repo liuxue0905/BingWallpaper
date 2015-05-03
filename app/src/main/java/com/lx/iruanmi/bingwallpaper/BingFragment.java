@@ -1,6 +1,7 @@
 package com.lx.iruanmi.bingwallpaper;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.net.Uri;
@@ -21,8 +22,9 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.lx.iruanmi.bingwallpaper.db.Bing;
+import com.lx.iruanmi.bingwallpaper.model.GetBingRequest;
 import com.lx.iruanmi.bingwallpaper.otto.BingFragmentSystemUiVisibilityChangeEvent;
-import com.lx.iruanmi.bingwallpaper.otto.BusProvider;
+//import com.lx.iruanmi.bingwallpaper.otto.BusProvider;
 import com.lx.iruanmi.bingwallpaper.otto.GetBingRequestEvent;
 import com.lx.iruanmi.bingwallpaper.otto.GetBingResponseEvent;
 import com.lx.iruanmi.bingwallpaper.util.MobclickAgentHelper;
@@ -31,17 +33,14 @@ import com.lx.iruanmi.bingwallpaper.util.Utility;
 import com.lx.iruanmi.bingwallpaper.widget.BingHpBottomCellView;
 import com.lx.iruanmi.bingwallpaper.widget.BingHudView;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.squareup.otto.Subscribe;
 import com.umeng.analytics.MobclickAgent;
-
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
 
 import java.util.HashMap;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnPageChange;
+import de.greenrobot.event.EventBus;
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.sample.HackyViewPager;
 
@@ -58,7 +57,7 @@ public class BingFragment extends Fragment {
 
     // parameter arguments
     // the fragment initialization parameters
-    private static final String ARG_GET_BING_REQUEST_EVENT = "GetBingRequestEvent";
+    private static final String ARG_GET_BING_REQUEST = "GetBingRequestEvent";
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -101,7 +100,7 @@ public class BingFragment extends Fragment {
         }
     };
     // parameters
-    private GetBingRequestEvent mGetBingRequestEvent;
+    private GetBingRequest mGetBingRequest;
 
     @InjectView(R.id.viewPhotoView)
     PhotoView viewPhotoView;
@@ -113,6 +112,8 @@ public class BingFragment extends Fragment {
     HackyViewPager viewViewPager;
 
     BingPagerAdapter mAdapter;
+
+    private OnFragmentInteractionListener mListener;
 
     /**
      * The instance of the {@link SystemUiHider} for this activity.
@@ -128,13 +129,13 @@ public class BingFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param event Parameter 2.
+     * @param getBingRequest Parameter 2.
      * @return A new instance of fragment BingFragment.
      */
-    public static BingFragment newInstance(GetBingRequestEvent event) {
+    public static BingFragment newInstance(GetBingRequest getBingRequest) {
         BingFragment fragment = new BingFragment();
         Bundle args = new Bundle();
-        args.putSerializable(ARG_GET_BING_REQUEST_EVENT, event);
+        args.putSerializable(ARG_GET_BING_REQUEST, getBingRequest);
         fragment.setArguments(args);
         return fragment;
     }
@@ -143,7 +144,7 @@ public class BingFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mGetBingRequestEvent = (GetBingRequestEvent) getArguments().getSerializable(ARG_GET_BING_REQUEST_EVENT);
+            mGetBingRequest = (GetBingRequest) getArguments().getSerializable(ARG_GET_BING_REQUEST);
         }
 
         View contentView = getActivity().getWindow().getDecorView();
@@ -152,7 +153,7 @@ public class BingFragment extends Fragment {
         mSystemUiHider.show();
 
         HashMap<String, String> map = new HashMap<String, String>();
-        map.put("GetBingRequestEvent", mGetBingRequestEvent != null ? mGetBingRequestEvent.toString() : null);
+        map.put("GetBingRequest", mGetBingRequest != null ? mGetBingRequest.toString() : null);
         MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_BING_ONCREATE, map);
     }
 
@@ -162,7 +163,8 @@ public class BingFragment extends Fragment {
 
         MobclickAgent.onPageStart(TAG); //统计页面
 
-        BusProvider.getInstance().register(this);
+//        BusProvider.getInstance().register(this);
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -171,7 +173,8 @@ public class BingFragment extends Fragment {
 
         MobclickAgent.onPageEnd(TAG);
 
-        BusProvider.getInstance().unregister(this);
+//        BusProvider.getInstance().unregister(this);
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -179,6 +182,13 @@ public class BingFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_bing, container, false);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        ((BingActivity) activity).onSectionAttached(
+                (GetBingRequest) getArguments().getSerializable(ARG_GET_BING_REQUEST));
     }
 
     @Override
@@ -213,9 +223,12 @@ public class BingFragment extends Fragment {
                                 mShortAnimTime = getResources().getInteger(
                                         android.R.integer.config_shortAnimTime);
                             }
+//                            viewBingHpBottomCellView.viewBingMusCardContentView.animate()
+//                                    .translationY(visible ? 0 : mControlsHeight)
+//                                    .setDuration(mShortAnimTime);
                             viewBingHpBottomCellView.viewBingMusCardContentView.animate()
-                                    .translationY(visible ? 0 : mControlsHeight)
-                                    .setDuration(mShortAnimTime);
+                                    .translationY(visible ? 0 : (int)(mControlsHeight * 1.5))
+                                    .setDuration((int)(mShortAnimTime * 1.5));
                         } else {
                             // If the ViewPropertyAnimator APIs aren't
                             // available, simply show or hide the in-layout UI
@@ -230,8 +243,7 @@ public class BingFragment extends Fragment {
                         }
                         viewBingHpBottomCellView.viewBingHpCtrlsView.cbHpcFullSmall.setChecked(!visible);
 
-//                mListener.onBingFragmentSystemUiVisibilityChange(visible);
-                        BusProvider.getInstance().post(new BingFragmentSystemUiVisibilityChangeEvent(visible));
+                        mListener.onBingFragmentSystemUiVisibilityChange(visible);
 
                         if (visible && AUTO_HIDE) {
                             // Schedule a hide().
@@ -245,6 +257,9 @@ public class BingFragment extends Fragment {
 
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                String bingpix = viewBingHpBottomCellView.viewBingHpCtrlsView.cbHpcLandscapePortrait.isChecked() ? "1080x1920" : "1920x1080";
+                mAdapter.setPix(bingpix);
+
                 HashMap<String, String> map = new HashMap<String, String>();
                 map.put("isChecked", String.valueOf(isChecked));
                 MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_BING_CB_LANDSCAPE_PORTRAIT, map);
@@ -276,13 +291,6 @@ public class BingFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                DateTime dateTime = DateTimeFormat.forPattern(getString(R.string.bing_date_formate)).parseDateTime(mGetBingRequestEvent.getYmd());
-                Log.d(TAG, "dateTime:" + dateTime);
-                dateTime = dateTime.minusDays(1);
-                Log.d(TAG, "dateTime:" + dateTime);
-                mGetBingRequestEvent.setYmd(dateTime.toString(getString(R.string.bing_date_formate)));
-                BusProvider.getInstance().post(mGetBingRequestEvent);
-
                 viewViewPager.setCurrentItem(viewViewPager.getCurrentItem() - 1, true);
 
                 MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_BING_BTN_PREVIOUS);
@@ -293,13 +301,6 @@ public class BingFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                DateTime dateTime = DateTimeFormat.forPattern(getString(R.string.bing_date_formate)).parseDateTime(mGetBingRequestEvent.getYmd());
-                Log.d(TAG, "dateTime:" + dateTime);
-                dateTime = dateTime.plusDays(1);
-                Log.d(TAG, "dateTime:" + dateTime);
-                mGetBingRequestEvent.setYmd(dateTime.toString(getString(R.string.bing_date_formate)));
-                BusProvider.getInstance().post(mGetBingRequestEvent);
-
                 viewViewPager.setCurrentItem(viewViewPager.getCurrentItem() + 1, true);
 
                 MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_BING_BTN_NEXT);
@@ -315,16 +316,16 @@ public class BingFragment extends Fragment {
 
         viewViewPager.setOffscreenPageLimit(1);
         mAdapter = new BingPagerAdapter(getActivity(), getFragmentManager());
+        mAdapter.setC(mGetBingRequest.c);
+        String bingpix = viewBingHpBottomCellView.viewBingHpCtrlsView.cbHpcLandscapePortrait.isChecked() ? "1080x1920" : "1920x1080";
+        mAdapter.setPix(bingpix);
         viewViewPager.setAdapter(mAdapter);
-        viewViewPager.setCurrentItem(mAdapter.getCount() - 1);
+        viewViewPager.setCurrentItem(Utility.getPositionMaxDate(getActivity(), mGetBingRequest.getYmd()));
     }
 
     @OnPageChange(R.id.viewViewPager)
     void onPageSelected(int position) {
         Log.d(TAG, "onPageSelected() position:" + position);
-
-//        viewBingHpBottomCellView.bind("2015-05-01", null);
-//        viewBingHpBottomCellView.viewBingHpCtrlsView.btnHpcPrevious.setEnabled();
     }
 
     /**
@@ -343,21 +344,29 @@ public class BingFragment extends Fragment {
         ImageLoader.getInstance().cancelDisplayTask(viewPhotoView);
     }
 
-    @Subscribe
-    public void onEventGetBingRequestEvent(GetBingRequestEvent event) {
-        Log.d(TAG, "onEventGetBingRequestEvent()");
-        mGetBingRequestEvent = event;
-
-        int position = Utility.getPositionMaxDate(getActivity(), event.getYmd());
-        Log.d(TAG, "onEventGetBingRequestEvent() position:" + position);
-        viewViewPager.setCurrentItem(position, true);
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p/>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
+     */
+    public interface OnFragmentInteractionListener {
+//        public void onFragmentInteraction(Uri uri);
+        void onBingFragmentSystemUiVisibilityChange(boolean visible);
     }
 
-    @Subscribe
-    public void onEventGetBingResponseEvent(GetBingResponseEvent event) {
-        Log.d(TAG, "onEventBingEvent()");
+//    @Subscribe
+    public void onEventMainThread(GetBingResponseEvent event) {
+        Log.d(TAG, "onEventMainThread()");
 
-        viewBingHpBottomCellView.bind(event.getBingRequestEvent.getYmd(), event.bing);
+//        Activity activity = getActivity();
+//        ((BingActivity) activity).onSectionAttached(event.getBingRequest);
+
+        viewBingHpBottomCellView.bind(event.getBingRequest.getYmd(), event.bing);
 
         final Bing bing = event.bing;
 

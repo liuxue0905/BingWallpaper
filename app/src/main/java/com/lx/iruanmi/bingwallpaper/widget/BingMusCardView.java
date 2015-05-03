@@ -48,6 +48,7 @@ public class BingMusCardView extends LinearLayout {
     }
 
     public void bind(Bing bing) {
+        clean();
         if (bing == null) {
             return;
         }
@@ -60,5 +61,12 @@ public class BingMusCardView extends LinearLayout {
             tvTitle.setVisibility(View.VISIBLE);
             tvCopyright.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void clean() {
+        tvTitle.setText(null);
+        tvCopyright.setText(null);
+        tvTitle.setVisibility(View.GONE);
+        tvCopyright.setVisibility(View.GONE);
     }
 }

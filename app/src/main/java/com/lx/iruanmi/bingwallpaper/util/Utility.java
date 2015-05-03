@@ -201,9 +201,9 @@ public class Utility {
         DateTime dateTimeLocal = DateTime.now().year().setCopy(dateLocal.getYear()).monthOfYear().setCopy(dateLocal.getMonthOfYear()).dayOfMonth().setCopy(dateLocal.getDayOfMonth());
         DateTime dateTimeZHCN = dateTimeLocal.toDateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone(TIME_ZONE_ID)));
 
-        Log.d(TAG, "dateLocal:" + dateLocal);
-        Log.d(TAG, "dateTimeLocal:" + dateTimeLocal);
-        Log.d(TAG, "dateTimeZHCN:" + dateTimeZHCN);
+        Log.d(TAG, "getDateTimeLocalToZHCN() dateLocal:" + dateLocal);
+        Log.d(TAG, "getDateTimeLocalToZHCN() dateTimeLocal:" + dateTimeLocal);
+        Log.d(TAG, "getDateTimeLocalToZHCN() dateTimeZHCN:" + dateTimeZHCN);
 
         return dateTimeZHCN;
     }
@@ -247,12 +247,13 @@ public class Utility {
     }
 
     public static String[] positionToYmds(Context context, int position) {
-        DateTime dateTime = DateTime.now().minusDays(Utility.DAYS_SHOW - 1 - position).toDateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone(Utility.TIME_ZONE_ID)));
-        Log.d(TAG, "getItem() dateTime:" + dateTime);
-
-        String ymd = dateTime.toString(context.getString(R.string.bing_date_formate));
-        String[] ymds = ymd.split("-");
+        String[] ymds = positionToYmd(context, position).split("-");
         return ymds;
+    }
+
+    public static String positionToYmd(Context context, int position) {
+        DateTime dateTime = DateTime.now().minusDays(Utility.DAYS_SHOW - 1 - position).toDateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone(Utility.TIME_ZONE_ID)));
+        return dateTime.toString(context.getString(R.string.bing_date_formate));
     }
 
 //    public static int ymdToPosition(Context context, String y, String m, String d) {

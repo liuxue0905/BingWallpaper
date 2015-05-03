@@ -3,6 +3,7 @@ package com.lx.iruanmi.bingwallpaper;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -13,7 +14,8 @@ import android.widget.Toast;
 
 import com.lx.iruanmi.bingwallpaper.db.Bing;
 import com.lx.iruanmi.bingwallpaper.db.DBUtil;
-import com.lx.iruanmi.bingwallpaper.otto.BusProvider;
+import com.lx.iruanmi.bingwallpaper.model.GetBingRequest;
+//import com.lx.iruanmi.bingwallpaper.otto.BusProvider;
 import com.lx.iruanmi.bingwallpaper.otto.GetBingRequestEvent;
 import com.lx.iruanmi.bingwallpaper.otto.GetBingResponseEvent;
 import com.lx.iruanmi.bingwallpaper.util.Utility;
@@ -31,6 +33,7 @@ import org.joda.time.DateTimeZone;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import de.greenrobot.event.EventBus;
 import uk.co.senab.photoview.PhotoView;
 
 /**
@@ -45,20 +48,23 @@ public class BingItemFragment extends UserVisibleHintFragment {
 
     private static final String ARG_POSITION = "position";
     private static final String ARG_DATE_EVENT = "DateEvent";
+    private static final String ARG_BING_PIX = "bingpix";
 
     private int position;
-    private GetBingRequestEvent mGetBingRequestEvent;
+    private GetBingRequest mGetBingRequest;
+    private String bingpix;
 
     @InjectView(R.id.viewPhotoView)
     PhotoView viewPhotoView;
     @InjectView(R.id.viewBingHudView)
     BingHudView viewBingHudView;
 
-    public static Fragment newInstance(int position, GetBingRequestEvent event) {
+    public static Fragment newInstance(int position, GetBingRequest getBingRequest, String bingpix) {
         BingItemFragment f = new BingItemFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_POSITION, position);
-        args.putSerializable(ARG_DATE_EVENT, event);
+        args.putSerializable(ARG_DATE_EVENT, getBingRequest);
+        args.putSerializable(ARG_BING_PIX, bingpix);
         f.setArguments(args);
         return f;
     }
@@ -68,70 +74,76 @@ public class BingItemFragment extends UserVisibleHintFragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             position = getArguments().getInt(ARG_POSITION);
-            mGetBingRequestEvent = (GetBingRequestEvent) getArguments().getSerializable(ARG_DATE_EVENT);
+            mGetBingRequest = (GetBingRequest) getArguments().getSerializable(ARG_DATE_EVENT);
+            bingpix = getArguments().getString(ARG_BING_PIX);
         }
-
-        Log.d(TAG, "onCreate() position:" + position);
+//        if (savedInstanceState != null) {
+//
+//        }
+//        Log.d(TAG, "onCreate() position:" + position);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView() position:" + position);
+//        Log.d(TAG, "onCreateView() position:" + position);
         return inflater.inflate(R.layout.fragment_bing_item, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onViewCreated() position:" + position);
+//        Log.d(TAG, "onViewCreated() position:" + position);
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.inject(this, view);
     }
 
     @Override
     public void onResume() {
+//        BusProvider.getInstance().register(this);
         super.onResume();
 
         MobclickAgent.onPageStart(TAG); //统计页面
-        BusProvider.getInstance().register(this);
     }
 
     @Override
     public void onPause() {
+//        BusProvider.getInstance().unregister(this);
         super.onPause();
 
         MobclickAgent.onPageEnd(TAG);
-        BusProvider.getInstance().unregister(this);
 
         Utility.cancelTaskInterrupt(mGetBingTask);
-        mGetBingTask = null;
         ImageLoader.getInstance().cancelDisplayTask(viewPhotoView);
-        isSuccess = false;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onVisible() {
-        Log.d(TAG, "onVisible() position:" + position);
+//        Log.d(TAG, "onVisible() position:" + position);
 
-        if (isSuccess) {
-            BusProvider.getInstance().post(mGetBingResponseEvent);
-            return;
+        if (!isSuccess) {
+            mGetBingResponseEvent = new GetBingResponseEvent(mGetBingRequest, null);
+//            BusProvider.getInstance().post(mGetBingResponseEvent);
+            EventBus.getDefault().post(mGetBingResponseEvent);
+
+            getBing();
+        } else {
+//            BusProvider.getInstance().post(mGetBingResponseEvent);
+            EventBus.getDefault().post(mGetBingResponseEvent);
         }
-
-        getBing();
     }
 
     @Override
     protected void onInVisible() {
-        Log.d(TAG, "onInVisible() position:" + position);
+//        Log.d(TAG, "onInVisible() position:" + position);
 
-//        viewBingHudView.setVisibility(View.GONE);
-//        viewPhotoView.setImageDrawable(null);
         if (!isSuccess) {
             Utility.cancelTaskInterrupt(mGetBingTask);
-            mGetBingTask = null;
             ImageLoader.getInstance().cancelDisplayTask(viewPhotoView);
-            isSuccess = false;
         }
     }
 
@@ -142,20 +154,16 @@ public class BingItemFragment extends UserVisibleHintFragment {
     private GetBingResponseEvent mGetBingResponseEvent;
 
     private void getBing() {
-        isSuccess = false;
-        Utility.cancelTaskInterrupt(mGetBingTask);
-        mGetBingTask = new GetBingTask(mGetBingRequestEvent.getYmd(), mGetBingRequestEvent.c);
+        mGetBingTask = new GetBingTask(mGetBingRequest);
         mGetBingTask.execute();
     }
 
     private class GetBingTask extends AsyncTask<Void, Void, Bing> {
 
-        private String date;
-        private String country;
+        private GetBingRequest getBingRequest;
 
-        private GetBingTask(String date, String country) {
-            this.date = date;
-            this.country = country;
+        private GetBingTask(GetBingRequest getBingRequest) {
+            this.getBingRequest = getBingRequest;
         }
 
         @Override
@@ -168,10 +176,10 @@ public class BingItemFragment extends UserVisibleHintFragment {
         @Override
         protected Bing doInBackground(Void... params) {
             try {
-                DateTime dateTimeZHCN = Utility.getDateTimeLocalToZHCN(getActivity(), mGetBingRequestEvent.getYmd());
+                DateTime dateTimeZHCN = Utility.getDateTimeLocalToZHCN(getActivity(), getBingRequest.getYmd());
                 String dateZHCN = dateTimeZHCN.toString(getString(R.string.bing_date_formate));
 
-                Bing bing = DBUtil.getBing(dateZHCN, country);
+                Bing bing = DBUtil.getBing(dateZHCN, getBingRequest.c);
                 Log.d(TAG, "bing:" + bing);
 
                 if (bing == null) {
@@ -180,7 +188,7 @@ public class BingItemFragment extends UserVisibleHintFragment {
                     String d = String.valueOf(dateTimeZHCN.getDayOfMonth());
 
                     INetwork network = new INetworkImpl();
-                    bing = network.adminAjax("get_bing", y, m, d, country);
+                    bing = network.adminAjax("get_bing", y, m, d, getBingRequest.c);
                     DBUtil.insertOrReplace(bing);
                 }
                 return bing;
@@ -216,13 +224,6 @@ public class BingItemFragment extends UserVisibleHintFragment {
             loadBingPicture(bing);
         }
 
-//        @Override
-//        protected void onCancelled() {
-//            super.onCancelled();
-//
-//            ImageLoader.getInstance().cancelDisplayTask(viewPhotoView);
-//        }
-
         void onPostExecute(Exception e) {
             if (isCancelled()) {
                 return;
@@ -256,8 +257,9 @@ public class BingItemFragment extends UserVisibleHintFragment {
     }
 
     private void loadBingPicture(final Bing bing) {
-        mGetBingResponseEvent = new GetBingResponseEvent(mGetBingRequestEvent, bing);
-        BusProvider.getInstance().post(mGetBingResponseEvent);
+        mGetBingResponseEvent.bing = bing;
+//        BusProvider.getInstance().post(mGetBingResponseEvent);
+        EventBus.getDefault().post(mGetBingResponseEvent);
 
         if (bing == null) {
             return;
@@ -276,7 +278,7 @@ public class BingItemFragment extends UserVisibleHintFragment {
                 .build();
 
 //        String bingpix = viewBingHpBottomCellView.viewBingHpCtrlsView.cbHpcLandscapePortrait.isChecked() ? bing.bing_9x16 : bing.bing_16x9;
-        String bingpix = bing.bing_16x9;
+        String bingpix = getBingPix(this.bingpix, bing);
         final String url = getString(R.string.bing_url_formate, getString(R.string.bing_host), bing.getBing_picname(), bingpix);
         Log.d(TAG, "url:" + url);
         final String subPath = url.substring(url.lastIndexOf('/'));
@@ -329,5 +331,13 @@ public class BingItemFragment extends UserVisibleHintFragment {
             }
         });
 
+    }
+
+    private String getBingPix(String bingpix, Bing bing) {
+//        if (!bingpix.equals(bing.bing_9x16) && !bingpix.equals(bing.bing_16x9)) {
+//            String[] wh = bingpix.split("x");
+//
+//        }
+        return bingpix;
     }
 }

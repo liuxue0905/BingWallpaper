@@ -104,7 +104,7 @@ public class BingHudView extends FrameLayout implements ImageLoadingListener, Im
     public void onProgressUpdate(String imageUri, View view, int current, int total) {
         this.setVisibility(View.VISIBLE);
         tvProgress.setVisibility(View.VISIBLE);
-        tvProgress.setText((int) (current * 100.0 / total) + "%");
+        tvProgress.setText(((int) (current * 100.0 / total)) + "%");
     }
 
     public void onBingPreExecute() {

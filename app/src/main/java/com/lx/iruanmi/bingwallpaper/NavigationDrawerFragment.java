@@ -1,5 +1,6 @@
 package com.lx.iruanmi.bingwallpaper;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,18 +26,19 @@ import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.Spinner;
 
-import com.lx.iruanmi.bingwallpaper.otto.BusProvider;
+import com.lx.iruanmi.bingwallpaper.model.GetBingRequest;
 import com.lx.iruanmi.bingwallpaper.otto.GetBingRequestEvent;
+import com.lx.iruanmi.bingwallpaper.otto.GetBingResponseEvent;
 import com.lx.iruanmi.bingwallpaper.util.MobclickAgentHelper;
 import com.lx.iruanmi.bingwallpaper.util.Utility;
-import com.squareup.otto.Produce;
-import com.squareup.otto.Subscribe;
 import com.umeng.analytics.MobclickAgent;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
 import java.util.HashMap;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -59,10 +62,10 @@ public class NavigationDrawerFragment extends Fragment {
      */
     private static final String PREF_USER_LEARNED_DRAWER = "navigation_drawer_learned";
 
-//    /**
-//     * A pointer to the current callbacks instance (the Activity).
-//     */
-//    private NavigationDrawerCallbacks mCallbacks;
+    /**
+     * A pointer to the current callbacks instance (the Activity).
+     */
+    private NavigationDrawerCallbacks mCallbacks;
 
     /**
      * Helper component that ties the action bar to the navigation drawer.
@@ -75,7 +78,7 @@ public class NavigationDrawerFragment extends Fragment {
     private CalendarView viewCanlendarView;
     private View mFragmentContainerView;
 
-    private GetBingRequestEvent mCurrentSelectedDateEvent;
+    private GetBingRequest mGetBingRequest;
 
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
@@ -94,13 +97,15 @@ public class NavigationDrawerFragment extends Fragment {
         mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
 
         if (savedInstanceState != null) {
-            mCurrentSelectedDateEvent = (GetBingRequestEvent) savedInstanceState.getSerializable(STATE_SELECTED_DATE_EVENT);
+            mGetBingRequest = (GetBingRequest) savedInstanceState.getSerializable(STATE_SELECTED_DATE_EVENT);
             mFromSavedInstanceState = true;
         } else {
             String ymd = DateTime.now().toString(getString(R.string.bing_date_formate));
             String[] ymds = Utility.getYmds(ymd);
-            mCurrentSelectedDateEvent = new GetBingRequestEvent(ymds[0], ymds[1], ymds[2], getCountry(0));
+            mGetBingRequest = new GetBingRequest(ymds[0], ymds[1], ymds[2], getCountry(0));
         }
+
+        selectItem(mGetBingRequest);
     }
 
     @Override
@@ -109,7 +114,8 @@ public class NavigationDrawerFragment extends Fragment {
         super.onResume();
         MobclickAgent.onPageStart(TAG); //统计页面
 
-        BusProvider.getInstance().register(this);
+//        BusProvider.getInstance().register(this);
+        EventBus.getDefault().register(this);
 
         if (!isAdded()) {
             return;
@@ -123,7 +129,8 @@ public class NavigationDrawerFragment extends Fragment {
         super.onPause();
         MobclickAgent.onPageEnd(TAG);
 
-        BusProvider.getInstance().unregister(this);
+//        BusProvider.getInstance().unregister(this);
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -159,10 +166,10 @@ public class NavigationDrawerFragment extends Fragment {
 
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mCurrentSelectedDateEvent.c = getCountry(position);
+                mGetBingRequest.c = getCountry(position);
 
                 HashMap<String, String> map = new HashMap<String, String>();
-                map.put("country", mCurrentSelectedDateEvent.c);
+                map.put("country", mGetBingRequest.c);
                 MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_NAVIGATION_DRAWER_FRAGMENT_COUNTRY, map);
 
                 updateWidgets();
@@ -177,7 +184,7 @@ public class NavigationDrawerFragment extends Fragment {
         btnDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DateTime dateTime = DateTimeFormat.forPattern(getString(R.string.bing_date_formate)).parseDateTime(mCurrentSelectedDateEvent.getYmd());
+                DateTime dateTime = DateTimeFormat.forPattern(getString(R.string.bing_date_formate)).parseDateTime(mGetBingRequest.getYmd());
                 DateWidgetFragment fragment = DateWidgetFragment.newInstance(dateTime.getYear(), dateTime.getMonthOfYear() - 1, dateTime.getDayOfMonth(), Utility.getMinDate(), Utility.getMaxDate());
                 fragment.setOnDateWidgetFragmentInteractionListener(new DateWidgetFragment.OnDateWidgetFragmentInteractionListener() {
 
@@ -188,10 +195,7 @@ public class NavigationDrawerFragment extends Fragment {
                         }
 
                         String ymd = new DateTime(year, monthOfYear + 1, dayOfMonth, 0, 0).toString(getString(R.string.bing_date_formate));
-                        String[] ymds = Utility.getYmds(ymd);
-                        mCurrentSelectedDateEvent.y = ymds[0];
-                        mCurrentSelectedDateEvent.m = ymds[1];
-                        mCurrentSelectedDateEvent.d = ymds[2];
+                        mGetBingRequest.setYmd(ymd);
 
                         MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_NAVIGATION_DRAWER_FRAGMENT_DATE_BUTTON);
 
@@ -211,10 +215,7 @@ public class NavigationDrawerFragment extends Fragment {
                 }
 
                 String ymd = new DateTime(year, month + 1, dayOfMonth, 0, 0).toString(getString(R.string.bing_date_formate));
-                String[] ymds = Utility.getYmds(ymd);
-                mCurrentSelectedDateEvent.y = ymds[0];
-                mCurrentSelectedDateEvent.m = ymds[1];
-                mCurrentSelectedDateEvent.d = ymds[2];
+                mGetBingRequest.setYmd(ymd);
 
                 MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_NAVIGATION_DRAWER_DATE_CALENDAR);
 
@@ -224,7 +225,8 @@ public class NavigationDrawerFragment extends Fragment {
 
         updateWidgets();
 
-        BusProvider.getInstance().post(mCurrentSelectedDateEvent);
+//        BusProvider.getInstance().post(new GetBingRequestEvent(mGetBingRequest));
+        selectItem(mGetBingRequest);
     }
 
     public boolean isDrawerOpen() {
@@ -269,7 +271,8 @@ public class NavigationDrawerFragment extends Fragment {
 
                 getActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
 
-                BusProvider.getInstance().post(mCurrentSelectedDateEvent);
+//                BusProvider.getInstance().post(new GetBingRequestEvent(mGetBingRequest));
+                selectItem(mGetBingRequest);
             }
 
             @Override
@@ -317,10 +320,39 @@ public class NavigationDrawerFragment extends Fragment {
         return cArray[position];
     }
 
+    private void selectItem(GetBingRequest getBingRequest) {
+        mGetBingRequest = getBingRequest;
+//        if (mDrawerListView != null) {
+//            mDrawerListView.setItemChecked(position, true);
+//        }
+//        if (mDrawerLayout != null) {
+//            mDrawerLayout.closeDrawer(mFragmentContainerView);
+//        }
+        if (mCallbacks != null) {
+            mCallbacks.onNavigationDrawerItemSelected(getBingRequest);
+        }
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mCallbacks = (NavigationDrawerCallbacks) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException("Activity must implement NavigationDrawerCallbacks.");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallbacks = null;
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable(STATE_SELECTED_DATE_EVENT, mCurrentSelectedDateEvent);
+        outState.putSerializable(STATE_SELECTED_DATE_EVENT, mGetBingRequest);
     }
 
     @Override
@@ -373,39 +405,38 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     private ActionBar getActionBar() {
-        return ((ActionBarActivity) getActivity()).getSupportActionBar();
+        return ((AppCompatActivity) getActivity()).getSupportActionBar();
     }
 
     private void updateWidgets() {
-        Log.d(TAG, "updateWidgets() mCurrentSelectedDateEvent:" + mCurrentSelectedDateEvent);
+        Log.d(TAG, "updateWidgets() mGetBingRequest:" + mGetBingRequest);
 
         viewCanlendarView.setMinDate(Utility.getMinDate());
         viewCanlendarView.setMaxDate(Utility.getMaxDate());
 
-        DateTime dateTime = DateTimeFormat.forPattern(getString(R.string.bing_date_formate)).parseDateTime(mCurrentSelectedDateEvent.getYmd());
+        DateTime dateTime = DateTimeFormat.forPattern(getString(R.string.bing_date_formate)).parseDateTime(mGetBingRequest.getYmd());
         viewCanlendarView.setDate(dateTime.getMillis(), false, true);
 
-        btnDate.setText(mCurrentSelectedDateEvent.getYmd());
+        btnDate.setText(mGetBingRequest.getYmd());
     }
 
-//    private void setBingFragmentParams(String date, String country) {
-//        mCurrentSelectedDate = date;
-//        mCurrentSelectedCountry = country;
-//
-//        updateWidgets();
-//
-//        selectItem();
-//    }
-
-    @Produce
-    public GetBingRequestEvent produceDateEvent() {
-        Log.d(TAG, "produceDateEvent()");
-        return mCurrentSelectedDateEvent;
+    /**
+     * Callbacks interface that all activities using this fragment must implement.
+     */
+    public static interface NavigationDrawerCallbacks {
+        /**
+         * Called when an item in the navigation drawer is selected.
+         */
+        void onNavigationDrawerItemSelected(GetBingRequest getBingRequest);
     }
 
-    @Subscribe
-    public void onEventDateEvent(GetBingRequestEvent event) {
-        mCurrentSelectedDateEvent = event;
+//    @Subscribe
+    public void onEventMainThread(GetBingResponseEvent event) {
+        Log.d(TAG, "onEventMainThread()");
+        mGetBingRequest = event.getBingRequest;
         updateWidgets();
+
+        Activity activity = getActivity();
+        ((BingActivity) activity).onSectionAttached(event.getBingRequest);
     }
 }
