@@ -161,6 +161,8 @@ public class BingFragment extends Fragment {
 
 //        BusProvider.getInstance().register(this);
         EventBus.getDefault().register(this);
+
+        mSystemUiHider.show();
     }
 
     @Override

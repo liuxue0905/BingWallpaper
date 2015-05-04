@@ -165,6 +165,7 @@ public class Utility {
                 Environment.DIRECTORY_PICTURES);
         File file = new File(path, subPath);
         Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setDataAndType(Uri.fromFile(file), "image/*");
         context.startActivity(intent);
     }
