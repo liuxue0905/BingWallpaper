@@ -68,16 +68,5 @@ public class BingHpCtrlsView extends LinearLayout {
     public void bind(String date, Bing bing) {
         cbHpcFullSmall.setEnabled(bing != null);
         btnHpcDown.setEnabled(bing != null && !TextUtils.isEmpty(bing.bing_picname));
-
-        DateTime nowDateTime = DateTime.now();
-        DateTime dateDateTime = DateTimeFormat.forPattern(getResources().getString(R.string.bing_date_formate)).parseDateTime(date);
-        DateTime minDateTime = new DateTime(Utility.getMinDate());
-
-        btnHpcNext.setEnabled(!Days.ZERO.equals(Days.daysBetween(nowDateTime, dateDateTime)));
-        btnHpcPrevious.setEnabled(!Days.ZERO.equals(Days.daysBetween(minDateTime, dateDateTime)));
-
-        if (bing == null) {
-            return;
-        }
     }
 }

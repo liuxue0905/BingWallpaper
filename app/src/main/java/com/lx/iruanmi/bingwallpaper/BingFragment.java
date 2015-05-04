@@ -101,10 +101,6 @@ public class BingFragment extends Fragment {
     // parameters
     private GetBingRequest mGetBingRequest;
 
-//    @InjectView(R.id.viewPhotoView)
-//    PhotoView viewPhotoView;
-//    @InjectView(R.id.viewBingHudView)
-//    BingHudView viewBingHudView;
     @InjectView(R.id.viewBingHpBottomCellView)
     BingHpBottomCellView viewBingHpBottomCellView;
     @InjectView(R.id.viewViewPager)
@@ -201,6 +197,12 @@ public class BingFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    public void bind(GetBingRequest getBingRequest) {
+        mGetBingRequest = getBingRequest;
+        mAdapter.setC(getBingRequest.c);
+        viewViewPager.setCurrentItem(Utility.getPositionMaxDate(getActivity(), getBingRequest.getYmd()), false);
     }
 
     /**
@@ -342,6 +344,9 @@ public class BingFragment extends Fragment {
     @OnPageChange(R.id.viewViewPager)
     void onPageSelected(int position) {
         Log.d(TAG, "onPageSelected() position:" + position);
+
+        viewBingHpBottomCellView.viewBingHpCtrlsView.btnHpcPrevious.setEnabled(position > 0);
+        viewBingHpBottomCellView.viewBingHpCtrlsView.btnHpcNext.setEnabled(position < mAdapter.getCount() -1);
     }
 
     /**
@@ -355,12 +360,16 @@ public class BingFragment extends Fragment {
 
 //    @Subscribe
     public void onEventMainThread(GetBingResponseEvent event) {
-        Log.d(TAG, "onEventMainThread()");
+        Log.d(TAG, "onEventMainThread() GetBingResponseEvent:" + event);
 
-//        Activity activity = getActivity();
-//        ((BingActivity) activity).onSectionAttached(event.getBingRequest);
+//        if (mListener != null) {
+//            mListener.onBingFragmentGetBingRequest(event.getBingRequest);
+//        }
+        Activity activity = getActivity();
+        ((BingActivity) activity).onSectionAttached(event.getBingRequest);
 
         viewBingHpBottomCellView.bind(event.getBingRequest.getYmd(), event.bing);
+
 
         final Bing bing = event.bing;
 

@@ -22,7 +22,7 @@ import com.umeng.update.UpdateResponse;
 import com.umeng.update.UpdateStatus;
 
 import butterknife.ButterKnife;
-import de.greenrobot.event.EventBus;
+//import de.greenrobot.event.EventBus;
 
 public class BingActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, BingFragment.OnFragmentInteractionListener {
@@ -82,15 +82,18 @@ public class BingActivity extends AppCompatActivity
     public void onNavigationDrawerItemSelected(GetBingRequest getBingRequest) {
         Log.d(TAG, "onNavigationDrawerItemSelected() GetBingRequest:" + getBingRequest);
 
+        BingFragment f = (BingFragment) getSupportFragmentManager().findFragmentById(R.id.container);
+        Log.d(TAG, "onNavigationDrawerItemSelected() f:" + f);
+
+        if (f != null) {
+            f.bind(getBingRequest);
+            return;
+        }
+
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.container, BingFragment.newInstance(getBingRequest))
                 .commit();
-
-//        Fragment f = fragmentManager.findFragmentById(R.id.container);
-//        Log.d(TAG, "onNavigationDrawerItemSelected() f:" + f);
-
-        EventBus.getDefault().post(new GetBingRequestEvent(getBingRequest));
     }
 
     public void onSectionAttached(GetBingRequest getBingRequest) {
@@ -175,7 +178,7 @@ public class BingActivity extends AppCompatActivity
     @Override
     public void onBingFragmentSystemUiVisibilityChange(boolean visible) {
         Log.d(TAG, "onBingFragmentSystemUiVisibilityChange() visible:" + visible);
-        ((HackyDrawerLayout) findViewById(R.id.drawer_layout)).setLocked(visible);
+        ((HackyDrawerLayout) findViewById(R.id.drawer_layout)).setLocked(!visible);
     }
 
 }

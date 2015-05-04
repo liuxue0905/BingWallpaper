@@ -45,7 +45,7 @@ public class BingItemFragment extends UserVisibleHintFragment {
             R.drawable.hpc_next_normal, R.drawable.hpc_portrait_normal, R.drawable.hpc_previous_normal, R.drawable.hpc_small_normal};
 
     private static final String ARG_POSITION = "position";
-    private static final String ARG_DATE_EVENT = "DateEvent";
+    private static final String ARG_GET_BING_REQUEST = "DateEvent";
     private static final String ARG_BING_PIX = "bingpix";
 
     private int position;
@@ -61,7 +61,7 @@ public class BingItemFragment extends UserVisibleHintFragment {
         BingItemFragment f = new BingItemFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_POSITION, position);
-        args.putSerializable(ARG_DATE_EVENT, getBingRequest);
+        args.putSerializable(ARG_GET_BING_REQUEST, getBingRequest);
         args.putSerializable(ARG_BING_PIX, bingpix);
         f.setArguments(args);
         return f;
@@ -72,7 +72,7 @@ public class BingItemFragment extends UserVisibleHintFragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             position = getArguments().getInt(ARG_POSITION);
-            mGetBingRequest = (GetBingRequest) getArguments().getSerializable(ARG_DATE_EVENT);
+            mGetBingRequest = (GetBingRequest) getArguments().getSerializable(ARG_GET_BING_REQUEST);
             bingpix = getArguments().getString(ARG_BING_PIX);
         }
 //        if (savedInstanceState != null) {
@@ -306,10 +306,10 @@ public class BingItemFragment extends UserVisibleHintFragment {
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
                 super.onLoadingComplete(imageUri, view, loadedImage);
 
+                isSuccess = true;
+
                 viewPhotoView.setImageBitmap(loadedImage);
                 viewBingHudView.onLoadingComplete(imageUri, view, loadedImage);
-
-                isSuccess = true;
             }
 
             @Override
