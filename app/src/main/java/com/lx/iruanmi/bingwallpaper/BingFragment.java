@@ -115,7 +115,6 @@ public class BingFragment extends Fragment {
      * The instance of the {@link SystemUiHider} for this activity.
      */
     private SystemUiHider mSystemUiHider;
-    //    private Bing mBing;
 
     public BingFragment() {
         // Required empty public constructor
