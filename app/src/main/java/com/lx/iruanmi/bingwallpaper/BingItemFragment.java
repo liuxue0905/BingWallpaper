@@ -13,8 +13,8 @@ import android.widget.Toast;
 
 import com.lx.iruanmi.bingwallpaper.db.Bing;
 import com.lx.iruanmi.bingwallpaper.db.DBUtil;
+import com.lx.iruanmi.bingwallpaper.eventbus.FullSmallEvent;
 import com.lx.iruanmi.bingwallpaper.model.GetBingRequest;
-//import com.lx.iruanmi.bingwallpaper.otto.BusProvider;
 import com.lx.iruanmi.bingwallpaper.eventbus.GetBingResponseEvent;
 import com.lx.iruanmi.bingwallpaper.util.Utility;
 import com.lx.iruanmi.bingwallpaper.widget.BingHudView;
@@ -40,9 +40,6 @@ import uk.co.senab.photoview.PhotoView;
 public class BingItemFragment extends UserVisibleHintFragment {
 
     private static final String TAG = "BingItemFragment";
-
-    private static final int[] sDrawables = {R.drawable.hpc_down_normal, R.drawable.hpc_full_normal, R.drawable.hpc_landscape_normal,
-            R.drawable.hpc_next_normal, R.drawable.hpc_portrait_normal, R.drawable.hpc_previous_normal, R.drawable.hpc_small_normal};
 
     private static final String ARG_POSITION = "position";
     private static final String ARG_GET_BING_REQUEST = "DateEvent";
@@ -81,6 +78,11 @@ public class BingItemFragment extends UserVisibleHintFragment {
 //        Log.d(TAG, "onCreate() position:" + position);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -93,11 +95,19 @@ public class BingItemFragment extends UserVisibleHintFragment {
 //        Log.d(TAG, "onViewCreated() position:" + position);
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.inject(this, view);
+
+        viewBingHudView.btnRefresh.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Utility.cancelTaskInterrupt(mGetBingTask);
+                ImageLoader.getInstance().cancelDisplayTask(viewPhotoView);
+                getBing();
+            }
+        });
     }
 
     @Override
     public void onResume() {
-//        BusProvider.getInstance().register(this);
         super.onResume();
 
         MobclickAgent.onPageStart(TAG); //统计页面
@@ -105,7 +115,6 @@ public class BingItemFragment extends UserVisibleHintFragment {
 
     @Override
     public void onPause() {
-//        BusProvider.getInstance().unregister(this);
         super.onPause();
 
         MobclickAgent.onPageEnd(TAG);
@@ -123,6 +132,8 @@ public class BingItemFragment extends UserVisibleHintFragment {
     protected void onVisible() {
 //        Log.d(TAG, "onVisible() position:" + position);
 
+        EventBus.getDefault().register(this);
+
         if (!isSuccess) {
             mGetBingResponseEvent = new GetBingResponseEvent(mGetBingRequest, null);
 //            BusProvider.getInstance().post(mGetBingResponseEvent);
@@ -139,10 +150,15 @@ public class BingItemFragment extends UserVisibleHintFragment {
     protected void onInVisible() {
 //        Log.d(TAG, "onInVisible() position:" + position);
 
+        EventBus.getDefault().unregister(this);
+
         if (!isSuccess) {
             Utility.cancelTaskInterrupt(mGetBingTask);
             ImageLoader.getInstance().cancelDisplayTask(viewPhotoView);
+            viewBingHudView.onBingPreExecute();
         }
+
+        viewPhotoView.setScale(1.0F, true);
     }
 
     private boolean isSuccess = false;
@@ -332,10 +348,24 @@ public class BingItemFragment extends UserVisibleHintFragment {
     }
 
     private String getBingPix(String bingpix, Bing bing) {
-//        if (!bingpix.equals(bing.bing_9x16) && !bingpix.equals(bing.bing_16x9)) {
-//            String[] wh = bingpix.split("x");
-//
-//        }
+        Log.d(TAG, "getBingPix() bingpix:" + bingpix);
+        Log.d(TAG, "getBingPix() bing:" + bing);
+        if (!bingpix.equals(bing.bing_9x16) && !bingpix.equals(bing.bing_16x9)) {
+            String[] wh = bingpix.split("x");
+            int w = Integer.parseInt(wh[0]);
+            int h = Integer.parseInt(wh[1]);
+            if (w < h) {
+                return bing.bing_9x16;
+            } else if (w > h) {
+                return bing.bing_16x9;
+            }
+        }
         return bingpix;
+    }
+
+    public void onEventMainThread(FullSmallEvent event) {
+        if (!event.isFull) {
+            viewPhotoView.setScale(1.0F, true);
+        }
     }
 }

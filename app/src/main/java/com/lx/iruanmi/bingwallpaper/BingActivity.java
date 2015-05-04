@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.lx.iruanmi.bingwallpaper.model.GetBingRequest;
-import com.lx.iruanmi.bingwallpaper.eventbus.GetBingRequestEvent;
 import com.lx.iruanmi.bingwallpaper.util.Utility;
 import com.lx.iruanmi.bingwallpaper.widget.HackyDrawerLayout;
 import com.umeng.analytics.MobclickAgent;
@@ -22,7 +21,6 @@ import com.umeng.update.UpdateResponse;
 import com.umeng.update.UpdateStatus;
 
 import butterknife.ButterKnife;
-//import de.greenrobot.event.EventBus;
 
 public class BingActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, BingFragment.OnFragmentInteractionListener {

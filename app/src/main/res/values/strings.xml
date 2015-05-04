@@ -48,6 +48,7 @@
     <!--${bing_host}${bing_picname}_${bing_pix}.jpg-->
     <string name="bing_url_formate" translatable="false"><xliff:g id="bing_host">%1$s</xliff:g><xliff:g id="bing_picname">%2$s</xliff:g>_<xliff:g id="bing_pix">%3$s</xliff:g>.jpg</string>
     <string name="download_successful">Download Successful!</string>
+    <string name="download_start">Download Start!</string>
 
     <string name="action_update">Update</string>
     <string name="action_doudoublog">Doudou\'s Blog</string>

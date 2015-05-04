@@ -64,9 +64,14 @@ public class BingPagerAdapter extends FragmentStatePagerAdapter {
         this.notifyDataSetChanged();
     }
 
+    public String getC() {
+        return this.c;
+    }
+
     public void setPix(String pix) {
 //        Log.d(TAG, "setPix() pix:" + pix);
         this.pix = pix;
         this.notifyDataSetChanged();
     }
+
 }

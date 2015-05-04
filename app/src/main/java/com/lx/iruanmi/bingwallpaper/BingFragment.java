@@ -23,6 +23,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.lx.iruanmi.bingwallpaper.db.Bing;
+import com.lx.iruanmi.bingwallpaper.eventbus.FullSmallEvent;
 import com.lx.iruanmi.bingwallpaper.model.GetBingRequest;
 //import com.lx.iruanmi.bingwallpaper.otto.BusProvider;
 import com.lx.iruanmi.bingwallpaper.eventbus.GetBingResponseEvent;
@@ -201,7 +202,9 @@ public class BingFragment extends Fragment {
 
     public void bind(GetBingRequest getBingRequest) {
         mGetBingRequest = getBingRequest;
-        mAdapter.setC(getBingRequest.c);
+        if (!mAdapter.getC().equals(getBingRequest.c)) {
+            mAdapter.setC(getBingRequest.c);
+        }
         viewViewPager.setCurrentItem(Utility.getPositionMaxDate(getActivity(), getBingRequest.getYmd()), false);
     }
 
@@ -267,6 +270,7 @@ public class BingFragment extends Fragment {
                         }
                         viewViewPager.setLocked(!visible);
                         viewBingHpBottomCellView.viewBingHpCtrlsView.cbHpcFullSmall.setChecked(!visible);
+                        EventBus.getDefault().post(new FullSmallEvent(!visible));
 
                         if (mListener != null) {
                             mListener.onBingFragmentSystemUiVisibilityChange(visible);
@@ -316,7 +320,7 @@ public class BingFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                viewViewPager.setCurrentItem(viewViewPager.getCurrentItem() - 1, true);
+                viewViewPager.setCurrentItem(viewViewPager.getCurrentItem() - 1, false);
 
                 MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_BING_BTN_PREVIOUS);
             }
@@ -326,7 +330,7 @@ public class BingFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                viewViewPager.setCurrentItem(viewViewPager.getCurrentItem() + 1, true);
+                viewViewPager.setCurrentItem(viewViewPager.getCurrentItem() + 1, false);
 
                 MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_BING_BTN_NEXT);
             }
@@ -411,6 +415,8 @@ public class BingFragment extends Fragment {
                 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 
                 manager.enqueue(request);
+
+                Toast.makeText(getActivity(), getString(R.string.download_start), Toast.LENGTH_LONG).show();
             }
         });
     }

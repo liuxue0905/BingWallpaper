@@ -66,7 +66,7 @@ public class BingHpCtrlsView extends LinearLayout {
     }
 
     public void bind(String date, Bing bing) {
-        cbHpcFullSmall.setEnabled(bing != null);
+//        cbHpcFullSmall.setEnabled(bing != null);
         btnHpcDown.setEnabled(bing != null && !TextUtils.isEmpty(bing.bing_picname));
     }
 }

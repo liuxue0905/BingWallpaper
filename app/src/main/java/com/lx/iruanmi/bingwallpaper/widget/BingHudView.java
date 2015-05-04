@@ -72,17 +72,19 @@ public class BingHudView extends FrameLayout implements ImageLoadingListener, Im
         tvProgress.setText(null);
         tvInfo.setVisibility(View.VISIBLE);
         tvInfo.setText(tvInfo.getContext().getString(R.string.pic_loading));
+        btnRefresh.setVisibility(View.GONE);
     }
 
     @Override
     public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
         this.setVisibility(View.VISIBLE);
         layoutProgress.setVisibility(View.VISIBLE);
-        pb.setVisibility(View.GONE);
+        pb.setVisibility(View.INVISIBLE);
         tvProgress.setVisibility(View.GONE);
         tvProgress.setText(null);
         tvInfo.setVisibility(View.VISIBLE);
         tvInfo.setText(tvInfo.getContext().getString(R.string.pic_loaded_failed));
+        btnRefresh.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -93,6 +95,8 @@ public class BingHudView extends FrameLayout implements ImageLoadingListener, Im
         tvProgress.setVisibility(View.GONE);
         tvProgress.setText(null);
         tvInfo.setVisibility(View.GONE);
+        tvInfo.setText(null);
+        btnRefresh.setVisibility(View.GONE);
     }
 
     @Override
@@ -119,9 +123,9 @@ public class BingHudView extends FrameLayout implements ImageLoadingListener, Im
         pb.setVisibility(View.VISIBLE);
         tvProgress.setVisibility(View.GONE);
         tvProgress.setText(null);
-        btnRefresh.setVisibility(View.GONE);
         tvInfo.setVisibility(View.VISIBLE);
         tvInfo.setText(getResources().getString(R.string.bing_loading));
+        btnRefresh.setVisibility(View.GONE);
     }
 
     public void onBingException() {
@@ -130,9 +134,9 @@ public class BingHudView extends FrameLayout implements ImageLoadingListener, Im
         pb.setVisibility(View.INVISIBLE);
         tvProgress.setVisibility(View.GONE);
         tvProgress.setText(null);
-        btnRefresh.setVisibility(View.VISIBLE);
         tvInfo.setVisibility(View.VISIBLE);
         tvInfo.setText(getResources().getString(R.string.bing_loaded_failed));
+        btnRefresh.setVisibility(View.VISIBLE);
     }
 
     public void onBingCancelled() {
