@@ -4,23 +4,23 @@
     android:layout_height="match_parent"
     tools:context="com.lx.iruanmi.bingwallpaper.BingFragment">
 
-    <uk.co.senab.photoview.PhotoView
-        android:id="@+id/viewPhotoView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="fitCenter" />
+    <!--<uk.co.senab.photoview.PhotoView-->
+        <!--android:id="@+id/viewPhotoView"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:scaleType="fitCenter" />-->
 
     <uk.co.senab.photoview.sample.HackyViewPager
         android:id="@+id/viewViewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.lx.iruanmi.bingwallpaper.widget.BingHudView
+    <!--<com.lx.iruanmi.bingwallpaper.widget.BingHudView
         android:id="@+id/viewBingHudView"
         android:visibility="gone"
         android:layout_gravity="center"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content" />-->
 
     <com.lx.iruanmi.bingwallpaper.widget.BingHpBottomCellView
         android:id="@+id/viewBingHpBottomCellView"

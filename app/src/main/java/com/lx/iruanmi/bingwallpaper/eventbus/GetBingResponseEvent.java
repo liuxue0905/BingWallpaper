@@ -1,4 +1,4 @@
-package com.lx.iruanmi.bingwallpaper.otto;
+package com.lx.iruanmi.bingwallpaper.eventbus;
 
 import com.lx.iruanmi.bingwallpaper.db.Bing;
 import com.lx.iruanmi.bingwallpaper.model.GetBingRequest;

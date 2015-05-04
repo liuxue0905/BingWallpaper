@@ -2,10 +2,8 @@ package com.lx.iruanmi.bingwallpaper;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -14,9 +12,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.lx.iruanmi.bingwallpaper.model.GetBingRequest;
-import com.lx.iruanmi.bingwallpaper.otto.BingFragmentSystemUiVisibilityChangeEvent;
-import com.lx.iruanmi.bingwallpaper.otto.GetBingRequestEvent;
-import com.lx.iruanmi.bingwallpaper.otto.GetBingResponseEvent;
+import com.lx.iruanmi.bingwallpaper.eventbus.GetBingRequestEvent;
 import com.lx.iruanmi.bingwallpaper.util.Utility;
 import com.lx.iruanmi.bingwallpaper.widget.HackyDrawerLayout;
 import com.umeng.analytics.MobclickAgent;
@@ -56,7 +52,6 @@ public class BingActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
-//            toolbar.setNavigationIcon(R.drawable.ic_drawer);
             setSupportActionBar(toolbar);
         }
 
@@ -76,16 +71,12 @@ public class BingActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         MobclickAgent.onResume(this);       //统计时长
-
-//        BusProvider.getInstance().register(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         MobclickAgent.onPause(this);
-
-//        BusProvider.getInstance().unregister(this);
     }
 
     public void onNavigationDrawerItemSelected(GetBingRequest getBingRequest) {
@@ -99,7 +90,6 @@ public class BingActivity extends AppCompatActivity
 //        Fragment f = fragmentManager.findFragmentById(R.id.container);
 //        Log.d(TAG, "onNavigationDrawerItemSelected() f:" + f);
 
-//        BusProvider.getInstance().post(new GetBingRequestEvent(getBingRequest));
         EventBus.getDefault().post(new GetBingRequestEvent(getBingRequest));
     }
 

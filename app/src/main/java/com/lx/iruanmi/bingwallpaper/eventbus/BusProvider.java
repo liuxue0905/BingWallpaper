@@ -1,4 +1,4 @@
-package com.lx.iruanmi.bingwallpaper.otto;
+package com.lx.iruanmi.bingwallpaper.eventbus;
 
 //import com.squareup.otto.Bus;
 //import com.squareup.otto.ThreadEnforcer;

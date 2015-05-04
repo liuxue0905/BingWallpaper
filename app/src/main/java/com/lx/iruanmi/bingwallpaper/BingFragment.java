@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -23,10 +24,8 @@ import android.widget.ToggleButton;
 
 import com.lx.iruanmi.bingwallpaper.db.Bing;
 import com.lx.iruanmi.bingwallpaper.model.GetBingRequest;
-import com.lx.iruanmi.bingwallpaper.otto.BingFragmentSystemUiVisibilityChangeEvent;
 //import com.lx.iruanmi.bingwallpaper.otto.BusProvider;
-import com.lx.iruanmi.bingwallpaper.otto.GetBingRequestEvent;
-import com.lx.iruanmi.bingwallpaper.otto.GetBingResponseEvent;
+import com.lx.iruanmi.bingwallpaper.eventbus.GetBingResponseEvent;
 import com.lx.iruanmi.bingwallpaper.util.MobclickAgentHelper;
 import com.lx.iruanmi.bingwallpaper.util.SystemUiHider;
 import com.lx.iruanmi.bingwallpaper.util.Utility;
@@ -102,10 +101,10 @@ public class BingFragment extends Fragment {
     // parameters
     private GetBingRequest mGetBingRequest;
 
-    @InjectView(R.id.viewPhotoView)
-    PhotoView viewPhotoView;
-    @InjectView(R.id.viewBingHudView)
-    BingHudView viewBingHudView;
+//    @InjectView(R.id.viewPhotoView)
+//    PhotoView viewPhotoView;
+//    @InjectView(R.id.viewBingHudView)
+//    BingHudView viewBingHudView;
     @InjectView(R.id.viewBingHpBottomCellView)
     BingHpBottomCellView viewBingHpBottomCellView;
     @InjectView(R.id.viewViewPager)
@@ -187,13 +186,36 @@ public class BingFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        try {
+            mListener = (OnFragmentInteractionListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+
         ((BingActivity) activity).onSectionAttached(
                 (GetBingRequest) getArguments().getSerializable(ARG_GET_BING_REQUEST));
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p/>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
+     */
+    public interface OnFragmentInteractionListener {
+        //        public void onFragmentInteraction(Uri uri);
+        void onBingFragmentSystemUiVisibilityChange(boolean visible);
     }
 
     @Override
@@ -237,13 +259,16 @@ public class BingFragment extends Fragment {
                         }
 
                         if (visible) {
-                            ((ActionBarActivity) getActivity()).getSupportActionBar().show();
+                            ((AppCompatActivity) getActivity()).getSupportActionBar().show();
                         } else {
-                            ((ActionBarActivity) getActivity()).getSupportActionBar().hide();
+                            ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
                         }
+                        viewViewPager.setLocked(!visible);
                         viewBingHpBottomCellView.viewBingHpCtrlsView.cbHpcFullSmall.setChecked(!visible);
 
-                        mListener.onBingFragmentSystemUiVisibilityChange(visible);
+                        if (mListener != null) {
+                            mListener.onBingFragmentSystemUiVisibilityChange(visible);
+                        }
 
                         if (visible && AUTO_HIDE) {
                             // Schedule a hide().
@@ -265,8 +290,6 @@ public class BingFragment extends Fragment {
                 MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_BING_CB_LANDSCAPE_PORTRAIT, map);
             }
         });
-
-//        getBing();
 
         viewBingHpBottomCellView.viewBingHpCtrlsView.cbHpcFullSmall.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -307,13 +330,6 @@ public class BingFragment extends Fragment {
             }
         });
 
-        viewBingHudView.btnRefresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                getBing();
-            }
-        });
-
         viewViewPager.setOffscreenPageLimit(1);
         mAdapter = new BingPagerAdapter(getActivity(), getFragmentManager());
         mAdapter.setC(mGetBingRequest.c);
@@ -335,28 +351,6 @@ public class BingFragment extends Fragment {
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-
-        ImageLoader.getInstance().cancelDisplayTask(viewPhotoView);
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-//        public void onFragmentInteraction(Uri uri);
-        void onBingFragmentSystemUiVisibilityChange(boolean visible);
     }
 
 //    @Subscribe

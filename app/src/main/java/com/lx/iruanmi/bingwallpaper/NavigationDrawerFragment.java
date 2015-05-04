@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -27,8 +26,7 @@ import android.widget.CalendarView;
 import android.widget.Spinner;
 
 import com.lx.iruanmi.bingwallpaper.model.GetBingRequest;
-import com.lx.iruanmi.bingwallpaper.otto.GetBingRequestEvent;
-import com.lx.iruanmi.bingwallpaper.otto.GetBingResponseEvent;
+import com.lx.iruanmi.bingwallpaper.eventbus.GetBingResponseEvent;
 import com.lx.iruanmi.bingwallpaper.util.MobclickAgentHelper;
 import com.lx.iruanmi.bingwallpaper.util.Utility;
 import com.umeng.analytics.MobclickAgent;
@@ -114,7 +112,6 @@ public class NavigationDrawerFragment extends Fragment {
         super.onResume();
         MobclickAgent.onPageStart(TAG); //统计页面
 
-//        BusProvider.getInstance().register(this);
         EventBus.getDefault().register(this);
 
         if (!isAdded()) {
@@ -129,7 +126,6 @@ public class NavigationDrawerFragment extends Fragment {
         super.onPause();
         MobclickAgent.onPageEnd(TAG);
 
-//        BusProvider.getInstance().unregister(this);
         EventBus.getDefault().unregister(this);
     }
 
