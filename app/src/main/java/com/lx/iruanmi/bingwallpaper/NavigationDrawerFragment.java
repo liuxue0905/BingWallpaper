@@ -221,7 +221,6 @@ public class NavigationDrawerFragment extends Fragment {
 
         updateWidgets();
 
-//        BusProvider.getInstance().post(new GetBingRequestEvent(mGetBingRequest));
         selectItem(mGetBingRequest);
     }
 

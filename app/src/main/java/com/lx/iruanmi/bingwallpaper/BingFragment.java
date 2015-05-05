@@ -58,6 +58,9 @@ public class BingFragment extends Fragment {
     // parameter arguments
     // the fragment initialization parameters
     private static final String ARG_GET_BING_REQUEST = "GetBingRequestEvent";
+
+    private static final String STATE_GET_BING_REQUEST = "bing_fragment_get_bing_request";
+
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -142,6 +145,10 @@ public class BingFragment extends Fragment {
             mGetBingRequest = (GetBingRequest) getArguments().getSerializable(ARG_GET_BING_REQUEST);
         }
 
+        if (savedInstanceState != null) {
+            mGetBingRequest = (GetBingRequest) savedInstanceState.getSerializable(STATE_GET_BING_REQUEST);
+        }
+
         View contentView = getActivity().getWindow().getDecorView();
         mSystemUiHider = SystemUiHider.getInstance(getActivity(), contentView, HIDER_FLAGS);
         mSystemUiHider.setup();
@@ -201,31 +208,15 @@ public class BingFragment extends Fragment {
         mListener = null;
     }
 
-    public void bind(GetBingRequest getBingRequest) {
-        mGetBingRequest = getBingRequest;
-        if (!mAdapter.getC().equals(getBingRequest.c)) {
-            mAdapter.setC(getBingRequest.c);
-        }
-        viewViewPager.setCurrentItem(Utility.getPositionMaxDate(getActivity(), getBingRequest.getYmd()), false);
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        //        public void onFragmentInteraction(Uri uri);
-        void onBingFragmentSystemUiVisibilityChange(boolean visible);
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(STATE_GET_BING_REQUEST, mGetBingRequest);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onViewCreated()");
         super.onViewCreated(view, savedInstanceState);
 
         ButterKnife.inject(this, view);
@@ -361,6 +352,29 @@ public class BingFragment extends Fragment {
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
+    }
+
+    public void bind(GetBingRequest getBingRequest) {
+        mGetBingRequest = getBingRequest;
+        if (!mAdapter.getC().equals(getBingRequest.c)) {
+            mAdapter.setC(getBingRequest.c);
+        }
+        viewViewPager.setCurrentItem(Utility.getPositionMaxDate(getActivity(), getBingRequest.getYmd()), false);
+    }
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p/>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
+     */
+    public interface OnFragmentInteractionListener {
+        //        public void onFragmentInteraction(Uri uri);
+        void onBingFragmentSystemUiVisibilityChange(boolean visible);
     }
 
 //    @Subscribe

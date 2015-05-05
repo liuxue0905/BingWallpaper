@@ -77,6 +77,14 @@ public class BingActivity extends AppCompatActivity
         MobclickAgent.onPause(this);
     }
 
+    @Override
+    protected void onDestroy() {
+        Log.d(TAG, "onDestroy()");
+        super.onDestroy();
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+    }
+
     public void onNavigationDrawerItemSelected(GetBingRequest getBingRequest) {
         Log.d(TAG, "onNavigationDrawerItemSelected() GetBingRequest:" + getBingRequest);
 
