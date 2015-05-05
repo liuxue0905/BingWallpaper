@@ -263,11 +263,9 @@ public class NavigationDrawerFragment extends Fragment {
                     return;
                 }
 
-                MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_NAVIGATION_DRAWER_ON_DRAWER_CLOSED);
-
                 getActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
 
-//                BusProvider.getInstance().post(new GetBingRequestEvent(mGetBingRequest));
+                MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_NAVIGATION_DRAWER_ON_DRAWER_CLOSED);
                 selectItem(mGetBingRequest);
             }
 
@@ -277,8 +275,6 @@ public class NavigationDrawerFragment extends Fragment {
                 if (!isAdded()) {
                     return;
                 }
-
-                MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_NAVIGATION_DRAWER_ON_DRAWER_OPENED);
 
                 if (!mUserLearnedDrawer) {
                     // The user manually opened the drawer; store this flag to prevent auto-showing
@@ -290,13 +286,19 @@ public class NavigationDrawerFragment extends Fragment {
                 }
 
                 getActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
+
+                MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_NAVIGATION_DRAWER_ON_DRAWER_OPENED);
             }
         };
+
+//        mDrawerLayout.setDrawerListener(mDrawerListener);
 
         // If the user hasn't 'learned' about the drawer, open it to introduce them to the drawer,
         // per the navigation drawer design guidelines.
         if (!mUserLearnedDrawer && !mFromSavedInstanceState) {
             mDrawerLayout.openDrawer(mFragmentContainerView);
+            //LX
+            mDrawerToggle.onDrawerOpened(mFragmentContainerView);
         }
 
         // Defer code dependent on restoration of previous instance state.
@@ -308,12 +310,6 @@ public class NavigationDrawerFragment extends Fragment {
         });
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-    }
-
-    private String getCountry(int position) {
-        String[] cArray = getResources().getStringArray(R.array.c);
-        return cArray[position];
     }
 
     private void selectItem(GetBingRequest getBingRequest) {
@@ -402,6 +398,11 @@ public class NavigationDrawerFragment extends Fragment {
 
     private ActionBar getActionBar() {
         return ((AppCompatActivity) getActivity()).getSupportActionBar();
+    }
+
+    private String getCountry(int position) {
+        String[] cArray = getResources().getStringArray(R.array.c);
+        return cArray[position];
     }
 
     private void updateWidgets() {

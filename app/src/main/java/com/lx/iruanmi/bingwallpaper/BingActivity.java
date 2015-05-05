@@ -179,4 +179,12 @@ public class BingActivity extends AppCompatActivity
         ((HackyDrawerLayout) findViewById(R.id.drawer_layout)).setLocked(!visible);
     }
 
+    @Override
+    public void onBackPressed() {
+        if (mNavigationDrawerFragment.isDrawerOpen()) {
+            ((HackyDrawerLayout) findViewById(R.id.drawer_layout)).closeDrawers();
+            return;
+        }
+        super.onBackPressed();
+    }
 }
