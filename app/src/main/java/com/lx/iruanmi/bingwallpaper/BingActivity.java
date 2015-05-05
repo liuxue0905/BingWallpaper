@@ -83,6 +83,10 @@ public class BingActivity extends AppCompatActivity
         super.onDestroy();
 
         FragmentManager fragmentManager = getSupportFragmentManager();
+        BingFragment f = (BingFragment) fragmentManager.findFragmentById(R.id.container);
+        if (f != null) {
+            fragmentManager.beginTransaction().remove(f).commit();
+        }
     }
 
     public void onNavigationDrawerItemSelected(GetBingRequest getBingRequest) {
