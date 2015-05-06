@@ -17,8 +17,7 @@
         android:theme="@style/AppTheme.Style1">
         <activity
             android:name=".BingActivity"
-            android:label="@string/title_activity_bing"
-            android:configChanges="orientation|keyboardHidden">
+            android:label="@string/title_activity_bing">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

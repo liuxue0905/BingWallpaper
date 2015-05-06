@@ -55,6 +55,7 @@ public class BingItemFragment extends UserVisibleHintFragment {
     BingHudView viewBingHudView;
 
     public static Fragment newInstance(int position, GetBingRequest getBingRequest, String bingpix) {
+        Log.d(TAG, "newInstance() position:" + position);
         BingItemFragment f = new BingItemFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_POSITION, position);
@@ -66,6 +67,7 @@ public class BingItemFragment extends UserVisibleHintFragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             position = getArguments().getInt(ARG_POSITION);
@@ -75,24 +77,39 @@ public class BingItemFragment extends UserVisibleHintFragment {
 //        if (savedInstanceState != null) {
 //
 //        }
-//        Log.d(TAG, "onCreate() position:" + position);
+        Log.d(TAG, "onCreate() position:" + position + ",this:" + this);
+
+        EventBus.getDefault().register(this);
     }
+
+    Bitmap mLoadedImage;
 
     @Override
     public void onDestroy() {
+        Log.d(TAG, "onDestroy() position:" + position + ",this:" + this);
+
+        EventBus.getDefault().unregister(this);
+
+        if (viewPhotoView != null) {
+            viewPhotoView.setImageBitmap(null);
+        }
+        if (mLoadedImage != null && !mLoadedImage.isRecycled()) {
+            mLoadedImage.recycle();
+        }
+
         super.onDestroy();
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-//        Log.d(TAG, "onCreateView() position:" + position);
+        Log.d(TAG, "onCreateView() position:" + position + ",this:" + this);
         return inflater.inflate(R.layout.fragment_bing_item, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-//        Log.d(TAG, "onViewCreated() position:" + position);
+        Log.d(TAG, "onViewCreated() position:" + position + ",this:" + this);
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.inject(this, view);
 
@@ -104,6 +121,8 @@ public class BingItemFragment extends UserVisibleHintFragment {
                 getBing();
             }
         });
+
+
     }
 
     @Override
@@ -130,29 +149,32 @@ public class BingItemFragment extends UserVisibleHintFragment {
 
     @Override
     protected void onVisible() {
-//        Log.d(TAG, "onVisible() position:" + position);
+        Log.d(TAG, "onVisible() position:" + position + ",this:" + this);
+        Log.d(TAG, "onVisible() mGetBingRequest:" + mGetBingRequest);
+        Log.d(TAG, "onVisible() mGetBingResponseEvent:" + mGetBingResponseEvent);
+        Log.d(TAG, "onVisible() mLoadedImage:" + mLoadedImage);
+        if (mLoadedImage != null) {
+            Log.d(TAG, "onVisible() mLoadedImage.isRecycled():" + mLoadedImage.isRecycled());
+        }
 
-        EventBus.getDefault().register(this);
-
-        if (!isSuccess) {
+        if (mGetBingResponseEvent == null || mGetBingResponseEvent.bing == null) {
             mGetBingResponseEvent = new GetBingResponseEvent(mGetBingRequest, null);
-//            BusProvider.getInstance().post(mGetBingResponseEvent);
             EventBus.getDefault().post(mGetBingResponseEvent);
 
             getBing();
         } else {
-//            BusProvider.getInstance().post(mGetBingResponseEvent);
+            if (mLoadedImage == null || mLoadedImage.isRecycled()) {
+                loadBingPicture(mGetBingResponseEvent.bing);
+            }
             EventBus.getDefault().post(mGetBingResponseEvent);
         }
     }
 
     @Override
     protected void onInVisible() {
-//        Log.d(TAG, "onInVisible() position:" + position);
+        Log.d(TAG, "onInVisible() position:" + position + ",this:" + this);
 
-        EventBus.getDefault().unregister(this);
-
-        if (!isSuccess) {
+        if (mGetBingResponseEvent == null || mGetBingResponseEvent.bing == null || mLoadedImage == null || mLoadedImage.isRecycled()) {
             Utility.cancelTaskInterrupt(mGetBingTask);
             ImageLoader.getInstance().cancelDisplayTask(viewPhotoView);
             viewBingHudView.onBingPreExecute();
@@ -161,8 +183,6 @@ public class BingItemFragment extends UserVisibleHintFragment {
         viewPhotoView.setScale(1.0F, true);
     }
 
-    private boolean isSuccess = false;
-
     private GetBingTask mGetBingTask;
 
     private GetBingResponseEvent mGetBingResponseEvent;
@@ -170,6 +190,10 @@ public class BingItemFragment extends UserVisibleHintFragment {
     private void getBing() {
         mGetBingTask = new GetBingTask(mGetBingRequest);
         mGetBingTask.execute();
+    }
+
+    public void bind(GetBingRequest getBingRequest) {
+        Log.d(TAG, "bind() position:" + position + ",this:" + this);
     }
 
     private class GetBingTask extends AsyncTask<Void, Void, Bing> {
@@ -194,7 +218,6 @@ public class BingItemFragment extends UserVisibleHintFragment {
                 String dateZHCN = dateTimeZHCN.toString(getString(R.string.bing_date_formate));
 
                 Bing bing = DBUtil.getBing(dateZHCN, getBingRequest.c);
-                Log.d(TAG, "bing:" + bing);
 
                 if (bing == null) {
                     String y = String.valueOf(dateTimeZHCN.getYear());
@@ -271,8 +294,8 @@ public class BingItemFragment extends UserVisibleHintFragment {
     }
 
     private void loadBingPicture(final Bing bing) {
+        Log.d(TAG, "loadBingPicture() viewPhotoView:" + viewPhotoView);
         mGetBingResponseEvent.bing = bing;
-//        BusProvider.getInstance().post(mGetBingResponseEvent);
         EventBus.getDefault().post(mGetBingResponseEvent);
 
         if (bing == null) {
@@ -286,25 +309,19 @@ public class BingItemFragment extends UserVisibleHintFragment {
 //                .showImageOnLoading(R.drawable.ic_image_loader_loading)
 //                .showImageForEmptyUri(R.drawable.ic_image_loader_fail)
 //                .showImageOnFail(R.drawable.ic_image_loader_fail)
-//                .cacheInMemory(true)
+//                .cacheInMemory(false)
                 .cacheOnDisk(true)
 //                .considerExifParams(true)
                 .build();
 
-//        String bingpix = viewBingHpBottomCellView.viewBingHpCtrlsView.cbHpcLandscapePortrait.isChecked() ? bing.bing_9x16 : bing.bing_16x9;
         String bingpix = getBingPix(this.bingpix, bing);
         final String url = getString(R.string.bing_url_formate, getString(R.string.bing_host), bing.getBing_picname(), bingpix);
-        Log.d(TAG, "url:" + url);
-        final String subPath = url.substring(url.lastIndexOf('/'));
-
-//        boolean has = Utility.hasExternalStoragePublicPicture(subPath);
-//        if (has) {
-//            viewBingHpBottomCellView.viewBingHpCtrlsView.btnHpcDown.setEnabled(false);
-//        }
+        Log.d(TAG, "loadBingPicture() url:" + url);
 
         ImageLoader.getInstance().displayImage(url, viewPhotoView, options, new SimpleImageLoadingListener() {
             @Override
             public void onLoadingStarted(String imageUri, View view) {
+                Log.d(TAG, "ImageLoadingListener.onLoadingStarted()");
                 super.onLoadingStarted(imageUri, view);
 
                 viewBingHudView.onLoadingStarted(imageUri, view);
@@ -312,6 +329,7 @@ public class BingItemFragment extends UserVisibleHintFragment {
 
             @Override
             public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                Log.d(TAG, "ImageLoadingListener.onLoadingFailed()");
                 super.onLoadingFailed(imageUri, view, failReason);
 
 //                viewPhotoView.setImageResource(R.drawable.ic_image_loader_fail);
@@ -320,17 +338,28 @@ public class BingItemFragment extends UserVisibleHintFragment {
 
             @Override
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                Log.d(TAG, "ImageLoadingListener.onLoadingComplete()");
+                Log.d(TAG, "ImageLoadingListener.onLoadingComplete() loadedImage:" + loadedImage);
+                if (loadedImage != null) {
+                    Log.d(TAG, "ImageLoadingListener.onLoadingComplete() loadedImage.isRecycled():" + loadedImage.isRecycled());
+                }
                 super.onLoadingComplete(imageUri, view, loadedImage);
 
-                isSuccess = true;
-
+                mLoadedImage = loadedImage;
                 viewPhotoView.setImageBitmap(loadedImage);
                 viewBingHudView.onLoadingComplete(imageUri, view, loadedImage);
             }
 
             @Override
             public void onLoadingCancelled(String imageUri, View view) {
+                Log.d(TAG, "ImageLoadingListener.onLoadingCancelled()");
                 super.onLoadingCancelled(imageUri, view);
+
+                if (mGetBingResponseEvent != null && mGetBingResponseEvent.bing != null) {
+                    if (mLoadedImage != null && !mLoadedImage.isRecycled()) {
+                        return;
+                    }
+                }
 
 //                viewPhotoView.setImageResource(R.drawable.ic_image_loader_fail);
                 viewBingHudView.onLoadingCancelled(imageUri, view);
@@ -347,9 +376,9 @@ public class BingItemFragment extends UserVisibleHintFragment {
 
     }
 
-    private String getBingPix(String bingpix, Bing bing) {
-        Log.d(TAG, "getBingPix() bingpix:" + bingpix);
-        Log.d(TAG, "getBingPix() bing:" + bing);
+    private static String getBingPix(String bingpix, Bing bing) {
+//        Log.d(TAG, "getBingPix() bingpix:" + bingpix);
+//        Log.d(TAG, "getBingPix() bing:" + bing);
         if (!bingpix.equals(bing.bing_9x16) && !bingpix.equals(bing.bing_16x9)) {
             String[] wh = bingpix.split("x");
             int w = Integer.parseInt(wh[0]);

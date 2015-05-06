@@ -4,10 +4,10 @@
 
     <style name="Widget.Style1"></style>
 
-    <style name="Widget.Style1.ActionBar" parent="Widget.AppCompat.ActionBar">
-        <item name="android:background">@color/musCard_background</item>
-        <item name="background">@color/musCard_background</item>
-    </style>
+    <!--<style name="Widget.Style1.ActionBar" parent="Widget.AppCompat.ActionBar">-->
+        <!--<item name="android:background">@color/musCard_background</item>-->
+        <!--<item name="background">@color/musCard_background</item>-->
+    <!--</style>-->
 
     <!--<style name="Widget.Style1.Button" >-->
     <!--<item name="android:minWidth">0dp</item>-->

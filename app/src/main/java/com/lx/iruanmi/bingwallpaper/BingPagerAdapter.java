@@ -3,7 +3,11 @@ package com.lx.iruanmi.bingwallpaper;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
+import android.view.ViewGroup;
 
 import com.lx.iruanmi.bingwallpaper.model.GetBingRequest;
 import com.lx.iruanmi.bingwallpaper.util.Utility;
@@ -11,7 +15,7 @@ import com.lx.iruanmi.bingwallpaper.util.Utility;
 /**
  * Created by liuxue on 2015/4/30.
  */
-public class BingPagerAdapter extends FragmentStatePagerAdapter {
+public class BingPagerAdapter extends /*FragmentPagerAdapter*/FragmentStatePagerAdapter {
 
     private static final String TAG = "BingPagerAdapter";
 
@@ -22,6 +26,7 @@ public class BingPagerAdapter extends FragmentStatePagerAdapter {
 
     public BingPagerAdapter(Context context, FragmentManager fm) {
         super(fm);
+        mFragmentManager = fm;
         this.context = context;
     }
 
@@ -32,20 +37,51 @@ public class BingPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-//        Log.d(TAG, "getItem() position:" + position);
-        String[] ymds = Utility.positionToYmds(context, position);
-        String y = ymds[0];
-        String m = ymds[1];
-        String d = ymds[2];
-        GetBingRequest getBingRequest = new GetBingRequest(y, m, d, this.c);
-        return BingItemFragment.newInstance(position, getBingRequest, this.pix);
+        Log.d(TAG, "getItem() position:" + position);
+
+        GetBingRequest getBingRequest = new GetBingRequest(Utility.positionToYmd(context, position), this.c);
+
+        Log.d(TAG, "getItem() newInstance begin position:" + position);
+        Fragment f = BingItemFragment.newInstance(position, getBingRequest, this.pix);
+        Log.d(TAG, "getItem() newInstance end position:" + position);
+        return f;
     }
+
+    private final FragmentManager mFragmentManager;
+    private FragmentTransaction mCurTransaction = null;
 
 //    @Override
 //    public Object instantiateItem(ViewGroup container, int position) {
 ////        return super.instantiateItem(container, position);
-//        BingItemFragment f = (BingItemFragment) super.instantiateItem(container, position);
-//        return f;
+//
+//        BingItemFragment fragment = (BingItemFragment) mFragmentManager.findFragmentByTag(BingItemFragment.class.getSimpleName() + '-' + position);
+//
+//        if (fragment != null) {
+//            return fragment;
+//        }
+//
+//        fragment = (BingItemFragment) super.instantiateItem(container, position);
+////        GetBingRequest getBingRequest = new GetBingRequest(Utility.positionToYmd(context, position), this.c);
+////        fragment.bind(getBingRequest);
+//
+//        if (mCurTransaction == null) {
+//            mCurTransaction = mFragmentManager.beginTransaction();
+//        }
+//
+//        mCurTransaction.remove(fragment);
+//        mCurTransaction.add(container.getId(), fragment, BingItemFragment.class.getSimpleName() + '-' + position);
+//
+//        return fragment;
+//    }
+
+//    @Override
+//    public void finishUpdate(ViewGroup container) {
+//        super.finishUpdate(container);
+//        if (mCurTransaction != null) {
+//            mCurTransaction.commitAllowingStateLoss();
+//            mCurTransaction = null;
+//            mFragmentManager.executePendingTransactions();
+//        }
 //    }
 
     @Override

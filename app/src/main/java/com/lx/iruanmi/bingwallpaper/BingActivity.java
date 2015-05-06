@@ -32,6 +32,8 @@ public class BingActivity extends AppCompatActivity
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
+    private BingFragment mBingFragment;
+
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
@@ -55,6 +57,8 @@ public class BingActivity extends AppCompatActivity
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
+        mBingFragment = (BingFragment)
+                getSupportFragmentManager().findFragmentById(R.id.fragment_bing);
         mTitle = getTitle();
 
         // Set up the drawer.
@@ -63,6 +67,8 @@ public class BingActivity extends AppCompatActivity
                 (HackyDrawerLayout) findViewById(R.id.drawer_layout));
 
 //        ((DrawerLayout) findViewById(R.id.drawer_layout)).setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
+        mBingFragment.bind(mNavigationDrawerFragment.getGetBingRequest());
     }
 
     @Override
@@ -81,29 +87,16 @@ public class BingActivity extends AppCompatActivity
     protected void onDestroy() {
         Log.d(TAG, "onDestroy()");
         super.onDestroy();
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        BingFragment f = (BingFragment) fragmentManager.findFragmentById(R.id.container);
-        if (f != null) {
-            fragmentManager.beginTransaction().remove(f).commit();
-        }
     }
 
     public void onNavigationDrawerItemSelected(GetBingRequest getBingRequest) {
         Log.d(TAG, "onNavigationDrawerItemSelected() GetBingRequest:" + getBingRequest);
+        Log.d(TAG, "onNavigationDrawerItemSelected() mBingFragment:" + mBingFragment);
 
-        BingFragment f = (BingFragment) getSupportFragmentManager().findFragmentById(R.id.container);
-        Log.d(TAG, "onNavigationDrawerItemSelected() f:" + f);
-
-        if (f != null) {
-            f.bind(getBingRequest);
+        if (mBingFragment != null) {
+            mBingFragment.bind(getBingRequest);
             return;
         }
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, BingFragment.newInstance(getBingRequest))
-                .commit();
     }
 
     public void onSectionAttached(GetBingRequest getBingRequest) {

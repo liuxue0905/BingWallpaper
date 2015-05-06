@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <eat-comment />
+    <color name="colorPrimary">#F50057</color>
+    <color name="colorPrimaryDark">#C51162</color>
+    <color name="textColorPrimary">#FFFFFF</color>
+    <color name="windowBackground">#FFFFFF</color>
+    <color name="navigationBarColor">#000000</color>
+    <color name="colorAccent">#FF80AB</color>
 
     <eat-comment />
-    <color name="windowBackground">#666</color>
-    <color name="colorPrimary">#FF8C00</color>
-    <color name="colorPrimaryDarkS1">#99000000</color>
+    <color name="windowBackgroundS1">#666</color>
+    <color name="colorPrimaryS1">#99000000</color>
+    <color name="colorPrimaryDarkS1">#aa000000</color>
+    <color name="colorPrimaryHS1">#FF8C00</color>
 
     <eat-comment />
     <color name="navt_background_normal">#2B2B2B</color>

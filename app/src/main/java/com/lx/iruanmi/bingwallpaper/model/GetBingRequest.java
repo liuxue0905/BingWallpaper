@@ -21,6 +21,11 @@ public class GetBingRequest implements Serializable {
         this.c = c;
     }
 
+    public GetBingRequest(String ymd, String c) {
+        this.setYmd(ymd);
+        this.c = c;
+    }
+
     public String getYmd() {
         return y + '-' + m + '-' + d;
     }

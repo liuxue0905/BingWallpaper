@@ -55,8 +55,8 @@
             android:id="@+id/viewCanlendarView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:selectedDateVerticalBar="?attr/colorPrimary"
-            android:selectedWeekBackgroundColor="?attr/colorPrimaryDark"
+            android:selectedDateVerticalBar="@color/colorPrimaryHS1"
+            android:selectedWeekBackgroundColor="?attr/colorPrimary"
             android:showWeekNumber="false" />
 
     </LinearLayout>

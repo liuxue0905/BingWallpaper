@@ -94,16 +94,17 @@ public class NavigationDrawerFragment extends Fragment {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
         mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
 
+        Log.d(TAG, "onCreate() savedInstanceState:" + savedInstanceState);
         if (savedInstanceState != null) {
             mGetBingRequest = (GetBingRequest) savedInstanceState.getSerializable(STATE_SELECTED_DATE_EVENT);
             mFromSavedInstanceState = true;
         } else {
             String ymd = DateTime.now().toString(getString(R.string.bing_date_formate));
-            String[] ymds = Utility.getYmds(ymd);
-            mGetBingRequest = new GetBingRequest(ymds[0], ymds[1], ymds[2], getCountry(0));
+            mGetBingRequest = new GetBingRequest(ymd, getCountry(0));
         }
 
-        selectItem(mGetBingRequest);
+        Log.d(TAG, "onCreate() mGetBingRequest:" + mGetBingRequest);
+//        selectItem(mGetBingRequest);
     }
 
     @Override
@@ -118,6 +119,7 @@ public class NavigationDrawerFragment extends Fragment {
             return;
         }
 
+        Log.d(TAG, "updateWidgets() onResume mGetBingRequest:" + mGetBingRequest);
         updateWidgets();
     }
 
@@ -154,6 +156,9 @@ public class NavigationDrawerFragment extends Fragment {
         viewCanlendarView = (CalendarView) view.findViewById(R.id.viewCanlendarView);
         btnDate = (Button) view.findViewById(R.id.btnDate);
 
+        Log.d(TAG, "updateWidgets() onViewCreated mGetBingRequest:" + mGetBingRequest);
+        updateWidgets();
+
         ArrayAdapter adapter = ArrayAdapter.createFromResource(getActivity(), R.array.c_display, R.layout.spinner_text);
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spinnerC.setAdapter(adapter);
@@ -168,6 +173,7 @@ public class NavigationDrawerFragment extends Fragment {
                 map.put("country", mGetBingRequest.c);
                 MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_NAVIGATION_DRAWER_FRAGMENT_COUNTRY, map);
 
+                Log.d(TAG, "updateWidgets() spinnerC mGetBingRequest:" + mGetBingRequest);
                 updateWidgets();
             }
 
@@ -195,6 +201,7 @@ public class NavigationDrawerFragment extends Fragment {
 
                         MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_NAVIGATION_DRAWER_FRAGMENT_DATE_BUTTON);
 
+                        Log.d(TAG, "updateWidgets() btnDate mGetBingRequest:" + mGetBingRequest);
                         updateWidgets();
                     }
                 });
@@ -215,13 +222,12 @@ public class NavigationDrawerFragment extends Fragment {
 
                 MobclickAgent.onEvent(getActivity(), MobclickAgentHelper.EVENT_ID_FRAGMENT_NAVIGATION_DRAWER_DATE_CALENDAR);
 
+                Log.d(TAG, "updateWidgets() viewCanlendarView mGetBingRequest:" + mGetBingRequest);
                 updateWidgets();
             }
         });
 
-        updateWidgets();
 
-        selectItem(mGetBingRequest);
     }
 
     public boolean isDrawerOpen() {
@@ -405,6 +411,7 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     private void updateWidgets() {
+        Log.d(TAG, "updateWidgets() this:" + this);
         Log.d(TAG, "updateWidgets() mGetBingRequest:" + mGetBingRequest);
 
         viewCanlendarView.setMinDate(Utility.getMinDate());
@@ -414,6 +421,10 @@ public class NavigationDrawerFragment extends Fragment {
         viewCanlendarView.setDate(dateTime.getMillis(), false, true);
 
         btnDate.setText(mGetBingRequest.getYmd());
+    }
+
+    public GetBingRequest getGetBingRequest() {
+        return mGetBingRequest;
     }
 
     /**
@@ -430,6 +441,7 @@ public class NavigationDrawerFragment extends Fragment {
     public void onEventMainThread(GetBingResponseEvent event) {
         Log.d(TAG, "onEventMainThread()");
         mGetBingRequest = event.getBingRequest;
+        Log.d(TAG, "updateWidgets() onEventMainThread mGetBingRequest:" + mGetBingRequest);
         updateWidgets();
 
         Activity activity = getActivity();

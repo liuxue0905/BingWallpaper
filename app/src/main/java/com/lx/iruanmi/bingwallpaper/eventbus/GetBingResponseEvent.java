@@ -15,4 +15,12 @@ public class GetBingResponseEvent {
         this.getBingRequest = getBingRequest;
         this.bing = bing;
     }
+
+    @Override
+    public String toString() {
+        return "GetBingResponseEvent{" +
+                "getBingRequest=" + getBingRequest +
+                ", bing=" + bing +
+                '}';
+    }
 }

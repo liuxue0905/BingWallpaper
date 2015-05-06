@@ -140,6 +140,7 @@ public class BingFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate() this:" + this);
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mGetBingRequest = (GetBingRequest) getArguments().getSerializable(ARG_GET_BING_REQUEST);
@@ -160,7 +161,14 @@ public class BingFragment extends Fragment {
     }
 
     @Override
+    public void onDestroy() {
+        Log.d(TAG, "onDestroy() this:" + this);
+        super.onDestroy();
+    }
+
+    @Override
     public void onResume() {
+        Log.d(TAG, "onResume() this:" + this);
         super.onResume();
 
         MobclickAgent.onPageStart(TAG); //统计页面
@@ -173,6 +181,7 @@ public class BingFragment extends Fragment {
 
     @Override
     public void onPause() {
+        Log.d(TAG, "onPause() this:" + this);
         super.onPause();
 
         MobclickAgent.onPageEnd(TAG);
@@ -184,6 +193,7 @@ public class BingFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView() this:" + this);
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_bing, container, false);
     }
@@ -198,8 +208,8 @@ public class BingFragment extends Fragment {
                     + " must implement OnFragmentInteractionListener");
         }
 
-        ((BingActivity) activity).onSectionAttached(
-                (GetBingRequest) getArguments().getSerializable(ARG_GET_BING_REQUEST));
+//        ((BingActivity) activity).onSectionAttached(
+//                (GetBingRequest) getArguments().getSerializable(ARG_GET_BING_REQUEST));
     }
 
     @Override
@@ -216,7 +226,7 @@ public class BingFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onViewCreated()");
+        Log.d(TAG, "onViewCreated() this:" + this);
         super.onViewCreated(view, savedInstanceState);
 
         ButterKnife.inject(this, view);
@@ -328,14 +338,16 @@ public class BingFragment extends Fragment {
             }
         });
 
-        viewViewPager.setOffscreenPageLimit(1);
-        mAdapter = new BingPagerAdapter(getActivity(), getFragmentManager());
-        mAdapter.setC(mGetBingRequest.c);
-        String bingpix = viewBingHpBottomCellView.viewBingHpCtrlsView.cbHpcLandscapePortrait.isChecked() ? "1080x1920" : "1920x1080";
-        mAdapter.setPix(bingpix);
-        viewViewPager.setAdapter(mAdapter);
-        viewViewPager.setCurrentItem(Utility.getPositionMaxDate(getActivity(), mGetBingRequest.getYmd()));
+//        viewViewPager.setOffscreenPageLimit(1);
+//        mAdapter = new BingPagerAdapter(getActivity(), getFragmentManager());
+//        mAdapter.setC(mGetBingRequest.c);
+//        String bingpix = viewBingHpBottomCellView.viewBingHpCtrlsView.cbHpcLandscapePortrait.isChecked() ? "1080x1920" : "1920x1080";
+//        mAdapter.setPix(bingpix);
+//        viewViewPager.setAdapter(mAdapter);
+//        viewViewPager.setCurrentItem(Utility.getPositionMaxDate(getActivity(), mGetBingRequest.getYmd()));
     }
+
+
 
     @OnPageChange(R.id.viewViewPager)
     void onPageSelected(int position) {
@@ -355,10 +367,24 @@ public class BingFragment extends Fragment {
     }
 
     public void bind(GetBingRequest getBingRequest) {
+        Log.d(TAG, "bind() getBingRequest:" + getBingRequest);
+        Log.d(TAG, "bind() mAdapter:" + mAdapter);
+        Log.d(TAG, "bind() viewViewPager:" + viewViewPager);
         mGetBingRequest = getBingRequest;
+
+        if (mAdapter == null) {
+            mAdapter = new BingPagerAdapter(getActivity(), getFragmentManager());
+            mAdapter.setC(mGetBingRequest.c);
+            String bingpix = viewBingHpBottomCellView.viewBingHpCtrlsView.cbHpcLandscapePortrait.isChecked() ? "1080x1920" : "1920x1080";
+            mAdapter.setPix(bingpix);
+            viewViewPager.setOffscreenPageLimit(1);
+            viewViewPager.setAdapter(mAdapter);
+        }
+
         if (!mAdapter.getC().equals(getBingRequest.c)) {
             mAdapter.setC(getBingRequest.c);
         }
+
         viewViewPager.setCurrentItem(Utility.getPositionMaxDate(getActivity(), getBingRequest.getYmd()), false);
     }
 
