@@ -39,12 +39,14 @@ public class BingPagerAdapter extends /*FragmentPagerAdapter*/FragmentStatePager
     public Fragment getItem(int position) {
         Log.d(TAG, "getItem() position:" + position);
 
-        GetBingRequest getBingRequest = new GetBingRequest(Utility.positionToYmd(context, position), this.c);
-
         Log.d(TAG, "getItem() newInstance begin position:" + position);
-        Fragment f = BingItemFragment.newInstance(position, getBingRequest, this.pix);
+        Fragment f = BingItemFragment.newInstance(position, getGetBingRequest(position), this.pix);
         Log.d(TAG, "getItem() newInstance end position:" + position);
         return f;
+    }
+
+    public GetBingRequest getGetBingRequest(int position) {
+        return new GetBingRequest(Utility.positionToYmd(context, position), this.c);
     }
 
     private final FragmentManager mFragmentManager;

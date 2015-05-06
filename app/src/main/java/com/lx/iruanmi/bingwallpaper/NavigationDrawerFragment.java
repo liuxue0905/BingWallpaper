@@ -26,7 +26,6 @@ import android.widget.CalendarView;
 import android.widget.Spinner;
 
 import com.lx.iruanmi.bingwallpaper.model.GetBingRequest;
-import com.lx.iruanmi.bingwallpaper.eventbus.GetBingResponseEvent;
 import com.lx.iruanmi.bingwallpaper.util.MobclickAgentHelper;
 import com.lx.iruanmi.bingwallpaper.util.Utility;
 import com.umeng.analytics.MobclickAgent;
@@ -35,8 +34,6 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
 import java.util.HashMap;
-
-import de.greenrobot.event.EventBus;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -113,8 +110,6 @@ public class NavigationDrawerFragment extends Fragment {
         super.onResume();
         MobclickAgent.onPageStart(TAG); //统计页面
 
-        EventBus.getDefault().register(this);
-
         if (!isAdded()) {
             return;
         }
@@ -127,8 +122,6 @@ public class NavigationDrawerFragment extends Fragment {
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd(TAG);
-
-        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -437,14 +430,9 @@ public class NavigationDrawerFragment extends Fragment {
         void onNavigationDrawerItemSelected(GetBingRequest getBingRequest);
     }
 
-//    @Subscribe
-    public void onEventMainThread(GetBingResponseEvent event) {
-        Log.d(TAG, "onEventMainThread()");
-        mGetBingRequest = event.getBingRequest;
-        Log.d(TAG, "updateWidgets() onEventMainThread mGetBingRequest:" + mGetBingRequest);
+    public void bind(GetBingRequest getBingRequest) {
+        Log.d(TAG, "bind() getBingRequest:" + getBingRequest);
+        mGetBingRequest = getBingRequest;
         updateWidgets();
-
-        Activity activity = getActivity();
-        ((BingActivity) activity).onSectionAttached(event.getBingRequest);
     }
 }

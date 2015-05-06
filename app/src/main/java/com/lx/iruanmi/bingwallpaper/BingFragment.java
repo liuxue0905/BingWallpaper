@@ -11,7 +11,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,16 +22,12 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.lx.iruanmi.bingwallpaper.db.Bing;
-import com.lx.iruanmi.bingwallpaper.eventbus.FullSmallEvent;
 import com.lx.iruanmi.bingwallpaper.model.GetBingRequest;
-//import com.lx.iruanmi.bingwallpaper.otto.BusProvider;
 import com.lx.iruanmi.bingwallpaper.eventbus.GetBingResponseEvent;
 import com.lx.iruanmi.bingwallpaper.util.MobclickAgentHelper;
 import com.lx.iruanmi.bingwallpaper.util.SystemUiHider;
 import com.lx.iruanmi.bingwallpaper.util.Utility;
 import com.lx.iruanmi.bingwallpaper.widget.BingHpBottomCellView;
-import com.lx.iruanmi.bingwallpaper.widget.BingHudView;
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.umeng.analytics.MobclickAgent;
 
 import java.util.HashMap;
@@ -41,7 +36,6 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnPageChange;
 import de.greenrobot.event.EventBus;
-import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.sample.HackyViewPager;
 
 
@@ -272,7 +266,13 @@ public class BingFragment extends Fragment {
                         }
                         viewViewPager.setLocked(!visible);
                         viewBingHpBottomCellView.viewBingHpCtrlsView.cbHpcFullSmall.setChecked(!visible);
-                        EventBus.getDefault().post(new FullSmallEvent(!visible));
+
+                        if (mAdapter != null && viewViewPager != null) {
+                            BingItemFragment fragment = (BingItemFragment) mAdapter.instantiateItem(viewViewPager, viewViewPager.getCurrentItem());
+                            if (fragment != null) {
+                                fragment.onSystemUiVisibilityChange(visible);
+                            }
+                        }
 
                         if (mListener != null) {
                             mListener.onBingFragmentSystemUiVisibilityChange(visible);
@@ -355,6 +355,12 @@ public class BingFragment extends Fragment {
 
         viewBingHpBottomCellView.viewBingHpCtrlsView.btnHpcPrevious.setEnabled(position > 0);
         viewBingHpBottomCellView.viewBingHpCtrlsView.btnHpcNext.setEnabled(position < mAdapter.getCount() -1);
+
+        if (mListener != null) {
+            mListener.onBingFragmentGetBingRequest(mAdapter.getGetBingRequest(position));
+        }
+//        Activity activity = getActivity();
+//        ((BingActivity) activity).onSectionAttached(mAdapter.getGetBingRequest(position));
     }
 
     /**
@@ -401,20 +407,14 @@ public class BingFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         //        public void onFragmentInteraction(Uri uri);
         void onBingFragmentSystemUiVisibilityChange(boolean visible);
+        void onBingFragmentGetBingRequest(GetBingRequest getBingRequest);
     }
 
 //    @Subscribe
     public void onEventMainThread(GetBingResponseEvent event) {
         Log.d(TAG, "onEventMainThread() GetBingResponseEvent:" + event);
 
-//        if (mListener != null) {
-//            mListener.onBingFragmentGetBingRequest(event.getBingRequest);
-//        }
-        Activity activity = getActivity();
-        ((BingActivity) activity).onSectionAttached(event.getBingRequest);
-
         viewBingHpBottomCellView.bind(event.getBingRequest.getYmd(), event.bing);
-
 
         final Bing bing = event.bing;
 

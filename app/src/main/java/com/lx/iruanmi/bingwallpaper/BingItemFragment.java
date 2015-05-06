@@ -13,7 +13,6 @@ import android.widget.Toast;
 
 import com.lx.iruanmi.bingwallpaper.db.Bing;
 import com.lx.iruanmi.bingwallpaper.db.DBUtil;
-import com.lx.iruanmi.bingwallpaper.eventbus.FullSmallEvent;
 import com.lx.iruanmi.bingwallpaper.model.GetBingRequest;
 import com.lx.iruanmi.bingwallpaper.eventbus.GetBingResponseEvent;
 import com.lx.iruanmi.bingwallpaper.util.Utility;
@@ -78,17 +77,13 @@ public class BingItemFragment extends UserVisibleHintFragment {
 //
 //        }
         Log.d(TAG, "onCreate() position:" + position + ",this:" + this);
-
-        EventBus.getDefault().register(this);
     }
 
-    Bitmap mLoadedImage;
+    private Bitmap mLoadedImage;
 
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy() position:" + position + ",this:" + this);
-
-        EventBus.getDefault().unregister(this);
 
         if (viewPhotoView != null) {
             viewPhotoView.setImageBitmap(null);
@@ -196,6 +191,14 @@ public class BingItemFragment extends UserVisibleHintFragment {
         Log.d(TAG, "bind() position:" + position + ",this:" + this);
     }
 
+    public void onSystemUiVisibilityChange(boolean visible) {
+        if (viewPhotoView != null) {
+            if (visible) {
+                viewPhotoView.setScale(1.0F, true);
+            }
+        }
+    }
+
     private class GetBingTask extends AsyncTask<Void, Void, Bing> {
 
         private GetBingRequest getBingRequest;
@@ -251,6 +254,8 @@ public class BingItemFragment extends UserVisibleHintFragment {
                 return;
             }
 
+            mGetBingResponseEvent.bing = bing;
+            EventBus.getDefault().post(mGetBingResponseEvent);
 
             if (bing == null) {
 //                pb.setVisibility(View.GONE);
@@ -295,8 +300,8 @@ public class BingItemFragment extends UserVisibleHintFragment {
 
     private void loadBingPicture(final Bing bing) {
         Log.d(TAG, "loadBingPicture() viewPhotoView:" + viewPhotoView);
-        mGetBingResponseEvent.bing = bing;
-        EventBus.getDefault().post(mGetBingResponseEvent);
+
+
 
         if (bing == null) {
             return;
@@ -392,9 +397,9 @@ public class BingItemFragment extends UserVisibleHintFragment {
         return bingpix;
     }
 
-    public void onEventMainThread(FullSmallEvent event) {
-        if (!event.isFull) {
-            viewPhotoView.setScale(1.0F, true);
-        }
-    }
+//    public void onEventMainThread(FullSmallEvent event) {
+//        if (!event.isFull) {
+//            viewPhotoView.setScale(1.0F, true);
+//        }
+//    }
 }

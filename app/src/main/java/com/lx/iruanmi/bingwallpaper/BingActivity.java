@@ -185,6 +185,12 @@ public class BingActivity extends AppCompatActivity
     }
 
     @Override
+    public void onBingFragmentGetBingRequest(GetBingRequest getBingRequest) {
+        mNavigationDrawerFragment.bind(getBingRequest);
+        onSectionAttached(getBingRequest);
+    }
+
+    @Override
     public void onBackPressed() {
         if (mNavigationDrawerFragment.isDrawerOpen()) {
             ((HackyDrawerLayout) findViewById(R.id.drawer_layout)).closeDrawers();
