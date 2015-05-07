@@ -26,12 +26,12 @@ public class BingPagerAdapter extends /*FragmentPagerAdapter*/FragmentStatePager
 
     public BingPagerAdapter(Context context, FragmentManager fm) {
         super(fm);
-        mFragmentManager = fm;
         this.context = context;
     }
 
     @Override
     public int getCount() {
+//        Log.d(TAG, "getCount()");
         return Utility.DAYS_SHOW;
     }
 
@@ -48,43 +48,6 @@ public class BingPagerAdapter extends /*FragmentPagerAdapter*/FragmentStatePager
     public GetBingRequest getGetBingRequest(int position) {
         return new GetBingRequest(Utility.positionToYmd(context, position), this.c);
     }
-
-    private final FragmentManager mFragmentManager;
-    private FragmentTransaction mCurTransaction = null;
-
-//    @Override
-//    public Object instantiateItem(ViewGroup container, int position) {
-////        return super.instantiateItem(container, position);
-//
-//        BingItemFragment fragment = (BingItemFragment) mFragmentManager.findFragmentByTag(BingItemFragment.class.getSimpleName() + '-' + position);
-//
-//        if (fragment != null) {
-//            return fragment;
-//        }
-//
-//        fragment = (BingItemFragment) super.instantiateItem(container, position);
-////        GetBingRequest getBingRequest = new GetBingRequest(Utility.positionToYmd(context, position), this.c);
-////        fragment.bind(getBingRequest);
-//
-//        if (mCurTransaction == null) {
-//            mCurTransaction = mFragmentManager.beginTransaction();
-//        }
-//
-//        mCurTransaction.remove(fragment);
-//        mCurTransaction.add(container.getId(), fragment, BingItemFragment.class.getSimpleName() + '-' + position);
-//
-//        return fragment;
-//    }
-
-//    @Override
-//    public void finishUpdate(ViewGroup container) {
-//        super.finishUpdate(container);
-//        if (mCurTransaction != null) {
-//            mCurTransaction.commitAllowingStateLoss();
-//            mCurTransaction = null;
-//            mFragmentManager.executePendingTransactions();
-//        }
-//    }
 
     @Override
     public int getItemPosition(Object object) {
