@@ -119,7 +119,7 @@
     <orderEntry type="library" exported="" name="library-1.2.3" level="project" />
     <orderEntry type="library" exported="" name="butterknife-6.1.0" level="project" />
     <orderEntry type="library" exported="" name="multidex-1.0.0" level="project" />
-    <orderEntry type="library" exported="" name="analytics-5.4.2" level="project" />
+    <orderEntry type="library" exported="" name="analytics-5.5.2" level="project" />
     <orderEntry type="library" exported="" name="okio-1.3.0" level="project" />
   </component>
 </module>

@@ -91,7 +91,6 @@ public class BingActivity extends AppCompatActivity
 
     public void onNavigationDrawerItemSelected(GetBingRequest getBingRequest) {
         Log.d(TAG, "onNavigationDrawerItemSelected() GetBingRequest:" + getBingRequest);
-        Log.d(TAG, "onNavigationDrawerItemSelected() mBingFragment:" + mBingFragment);
 
         onSectionAttached(getBingRequest);
 
