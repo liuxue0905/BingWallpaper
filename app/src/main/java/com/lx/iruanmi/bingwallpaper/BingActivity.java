@@ -69,6 +69,11 @@ public class BingActivity extends AppCompatActivity
 //        ((DrawerLayout) findViewById(R.id.drawer_layout)).setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
         mBingFragment.bind(mNavigationDrawerFragment.getGetBingRequest());
+
+        UmengUpdateAgent.setSlotId("65102");
+        UmengUpdateAgent.setUpdateOnlyWifi(false);
+        UmengUpdateAgent.update(this);
+        UmengUpdateAgent.setUpdateListener(null);
     }
 
     @Override
@@ -146,8 +151,8 @@ public class BingActivity extends AppCompatActivity
         if (id == R.id.action_settings) {
             return true;
         } else if (id == R.id.action_update) {
-            UmengUpdateAgent.setUpdateOnlyWifi(false);
             UmengUpdateAgent.setSlotId("65102");
+            UmengUpdateAgent.setUpdateOnlyWifi(false);
             UmengUpdateAgent.forceUpdate(this);
             UmengUpdateAgent.setUpdateListener(new UmengUpdateListener() {
 
